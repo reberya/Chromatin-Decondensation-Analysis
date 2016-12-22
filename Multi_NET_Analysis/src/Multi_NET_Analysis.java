@@ -7,6 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
+ * 
+ * Trying to update this nonsense 
+ * 
  * Main Class 12.22.2016
  * 
  * Directs analysis of Fiji NET_analysis output. 
