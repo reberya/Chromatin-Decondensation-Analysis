@@ -7,9 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
- * Estimates NETosis based on Brinkman 2x area
- * -works but not reliable for distinguishing 
- * NETs from decondensing neutrophils
+ * TEST BRANCH 
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
