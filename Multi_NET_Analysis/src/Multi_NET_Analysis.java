@@ -7,9 +7,11 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
+ * Working as of 12.22.2016
+ * Bugs:
+ * 		-doesn't identify NETs vs decondensed well
+ * 			-Goal: incorporate multiple area cutoffs
  * 
- * Added features:
- * chromatin decondensation vars
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
