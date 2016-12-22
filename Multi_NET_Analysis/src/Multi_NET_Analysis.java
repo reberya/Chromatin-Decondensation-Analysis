@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * 
- * Trying to update this nonsense 
+ * ATTEMPTING TO COMMIT FROM MAC
  * 
  * Main Class 12.22.2016
  * 
