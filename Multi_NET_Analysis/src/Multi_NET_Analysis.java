@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * 
- * Trying to update this nonsense 
+ * Trying to update this nonsense - Desktop
  * 
  * Main Class 12.22.2016
  * 
