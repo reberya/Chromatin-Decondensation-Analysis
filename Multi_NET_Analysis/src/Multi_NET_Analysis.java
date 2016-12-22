@@ -24,7 +24,7 @@ import java.util.Scanner;
  */
 
 public class Multi_NET_Analysis {
-
+//
 	//user determined parameters
 	static Double NETcutoff;			//cutoff level to determine whether NET
 	static String outputDirectory;		//directory files will be saved to
