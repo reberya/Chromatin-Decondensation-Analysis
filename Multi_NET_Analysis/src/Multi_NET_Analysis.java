@@ -8,9 +8,8 @@ import java.util.Scanner;
 
 /**
  * 
- * Trying to update this nonsense - Desktop
- * 
- * Main Class 12.22.2016
+ * Added features:
+ * chromatin decondensation vars
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
