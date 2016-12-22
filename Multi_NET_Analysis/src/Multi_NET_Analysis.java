@@ -7,10 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
- * 
- * Trying to update this nonsense - Desktop
- * 
- * Main Class 12.22.2016
+ * Estimates NETosis based on Brinkman 2x area
+ * -works but not reliable for distinguishing 
+ * NETs from decondensing neutrophils
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
