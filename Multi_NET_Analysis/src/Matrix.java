@@ -14,7 +14,7 @@ public class Matrix {
 	int numCells;
 	int x;
 	int y;
-	int NET;
+	int NET1, NET2, NET3, NET4;
 	int condensed;
 	Double upperCutoff;
 	Double lowerCutoff;
@@ -114,14 +114,18 @@ public class Matrix {
 	 * Updates the matrix to include outliers, relative sizes, 
 	 * and new avergaes excluding outliers
 	 * @param NETcutoff 
+	 * @param nETcutoff4 
+	 * @param nETcutoff3 
+	 * @param nETcutoff2 
 	 * 
 	 * @param average - the average of the 5 smallest cells
 	 * @return the updated matrix 
 	 */
-	public void update(Double avg, Double NETcutoff) {
+	public void update(Double avg, Double cutoff1, Double cutoff2, 
+			Double cutoff3, Double cutoff4) {
 
 		NETs = new String[numCells];
-		NET = 0;
+		NET1 = NET2 = NET3 = NET4 = 0;
 		condensed = 0;
 		Double sum, average, variance, SD, uCutoff, lCutoff;
 		sum = average = variance = SD = uCutoff = lCutoff = 0.0;
@@ -155,17 +159,37 @@ public class Matrix {
 				currMatrix[11][i] = currMatrix[7][i];
 				//computes relative area for each cell that's not an outlier
 				currMatrix[12][i] = (double)((currMatrix[1][i])/average);
-				//identifies if NET based on user defined cutoff
-				if (currMatrix[12][i] > NETcutoff) {
-					NETs[i] = "NET";
-					NET++;
-				} else { 
-					NETs[i] = "x"; 
+				
+				//IDs degree of chromatin decondensation based on user defined cutoffs
+				if (currMatrix[12][i] < cutoff1){
+					NETs[i] = "x";
 				}
-
+				
+				else if (currMatrix[12][i] >= cutoff4) {
+					NETs[i] = "NET (" + cutoff4 + "x)";
+					NET4++;
+					NET3++;
+					NET2++;
+					NET1++;
+				}
+				else if (currMatrix[12][i] >= cutoff3) {
+					NETs[i] = "NET (" + cutoff3 + "x)";
+					NET3++;
+					NET2++;
+					NET1++;
+				}
+				else if (currMatrix[12][i] >= cutoff2) {
+					NETs[i] = "NET (" + cutoff2 + "x)";
+					NET2++;
+					NET1++;
+				}
+				else if (currMatrix[12][i] >= cutoff1) {
+					NETs[i] = "NET (" + cutoff1 + "x)";
+					NET1++;
+				}
+				
 				//computes relative average area
 				RelAreaAvg = RelAreaAvg += currMatrix[12][i];
-
 
 			}
 			//else outlier values for relative ara and Nonoutlier are null
@@ -182,7 +206,7 @@ public class Matrix {
 		labels[13] = "NET?";
 
 		//stores new average labels in array newLabels
-		newLabels = new String[17];
+		newLabels = new String[24];
 		newLabels[1] = "Old RID Average:";
 		newLabels[2] = "Upper cutoff:";
 		newLabels[3] = "Lower cutoff:";
@@ -197,10 +221,15 @@ public class Matrix {
 		newLabels[12] = "Round Average:";
 		newLabels[13] = "Solidity Average:";
 		newLabels[14] = "Relative Area Average:";
-
-		newLabels[15] = "NET cutoff:";
-		newLabels[16] = "%NETosis";
-
+		newLabels[15] = "(" + cutoff1 + "x) %Chromatin Decondensation";
+		newLabels[16] = "(" + cutoff2 + "x) %Chromatin Decondensation";
+		newLabels[17] = "(" + cutoff3 + "x) %Chromatin Decondensation";
+		newLabels[18] = "(" + cutoff4 + "x) %Chromatin Decondensation";
+		newLabels[19] = "(" + cutoff1 + "x) #:";
+		newLabels[20] = "(" + cutoff2 + "x) #:";
+		newLabels[21] = "(" + cutoff3 + "x) #:";
+		newLabels[22] = "(" + cutoff4 + "x) #:";
+		
 		//adds new averages to matrix
 		currMatrix[15][1] = oldRID;
 		currMatrix[15][2] = upperCutoff;
@@ -216,8 +245,15 @@ public class Matrix {
 		currMatrix[15][12] = roundAvg/count;
 		currMatrix[15][13] = solidityAvg/count;		
 		currMatrix[15][14] = RelAreaAvg/count;	
-		currMatrix[15][15] = NETcutoff;	
-		currMatrix[15][16] = (double) ((double)NET*100/(count));
+		currMatrix[15][15] = (double) ((double)NET1*100/(count));	
+		currMatrix[15][16] = (double) ((double)NET2*100/(count));
+		currMatrix[15][17] = (double) ((double)NET3*100/(count));	
+		currMatrix[15][18] = (double) ((double)NET4*100/(count));
+		currMatrix[15][19] = (double) NET1;
+		currMatrix[15][20] = (double) NET2;
+		currMatrix[15][21] = (double) NET3;
+		currMatrix[15][22] = (double) NET4;
+
 	}
 
 	/**
@@ -229,29 +265,35 @@ public class Matrix {
 		PrintWriter pw = new PrintWriter(new File(outputDirectory + name + "/"));
 		StringBuilder sb = new StringBuilder();
 
-		//add labels
+		//add column labels
+		//TODO: get proper csv string of last 3 collumn label headers
 		for(int num=0; num<11; num++){
 			sb.append(labels[num] + ',');
 		}
 		sb.append('\n');
 
 		//for each row up to and including row 13 (all calculated)
-		for (int row=0; row<16; row++){
+		for (int row=0; row<22; row++){
 			//for each column
 			for(int col=0; col<16; col++){
 				//adds outlier column
-				if (col>14 && row <16){
+				if (col>14 && row <22){
 					sb.append(newLabels[row+1] + ",");
 					sb.append(currMatrix[15][row+1] + ",");
-				} else if (col == 13){
+				} 
+				//Collumn indicating whether NET
+				else if (col == 13){
 					try {
 						sb.append(NETs[row] + ",");
 					}catch (ArrayIndexOutOfBoundsException e) {
 						sb.append(" " + ",");
 					}
+				//if no value b/c outlier, leave blank
 				} else if (currMatrix[col][row] == null){
 					sb.append("" + ",");
-				} else {
+				} 
+				//else append all other values
+				else {
 					sb.append(currMatrix[col][row] + ",");
 				}
 			}
@@ -260,7 +302,7 @@ public class Matrix {
 
 		//adds remaining rows of data
 		if (numCells>13){
-			for (int nRow=16; nRow<numCells; nRow++){
+			for (int nRow=22; nRow<numCells; nRow++){
 				for(int col=0; col<14; col++){
 					if (col == 13) {
 						sb.append(NETs[nRow] + ",");

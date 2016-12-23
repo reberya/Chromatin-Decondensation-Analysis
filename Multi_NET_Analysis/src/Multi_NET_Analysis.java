@@ -7,7 +7,11 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
- * TEST BRANCH (SENT ON MACBOOK; RECIEVED?)
+ * TEST BRANCH (12.23.2016)
+ * 		Added features from master:
+ * 			-multiple NET cutoffs
+ * 			-number of NETs per image by cutoff
+ * 
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
@@ -26,8 +30,8 @@ import java.util.Scanner;
 public class Multi_NET_Analysis {
 //
 	//user determined parameters
-	static Double NETcutoff;			//cutoff level to determine whether NET
-	static String outputDirectory;		//directory files will be saved to
+	static Double NETcutoff1, NETcutoff2, NETcutoff3, NETcutoff4;	//cutoff level to determine whether NET
+	static String outputDirectory, inputDirectory;		//directory files will be saved to
 	static Double upperCutoff;			//upper cutoff SD
 	static Double lowerCutoff;			//lower cutoff SD
 	static String treatment;
@@ -45,21 +49,31 @@ public class Multi_NET_Analysis {
 	public static void main(String[] args) throws FileNotFoundException {
 		//OUTPUT DIRECTORY
 		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
+		//INPUT DIRECTORY
+		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
 		//UPPER STANDARD CUTOFF VALUE
 		upperCutoff = 1.5;
 		//LOWER STANDARD CUTOFF VALUE
 		lowerCutoff = 1.5;
-		//NET CUTOFF VALUE
-		NETcutoff = 2.0;
+		
+		//NET CUTOFF VALUE 1
+		NETcutoff1 = 2.0;
+		//NET CUTOFF VALUE 2
+		NETcutoff2 = 3.0;
+		//NET CUTOFF VALUE 3
+		NETcutoff3 = 4.0;
+		//NET CUTOFF VALUE 4
+		NETcutoff4 = 5.0;
+		
 		//TREATMENT COMPARING W/IN SUBJECT
 		treatment = "IO";
 
 		allFiles = new ArrayList<Matrix>();	//initializes array to hold all matricies
-		allRID = new ArrayList<Double>();
+		allRID = new ArrayList<Double>();	//array to hold all RIDs for taking average
 
-		//SPECIFY FOLDER
+
 		//folder from which .csv files taken out of; INPUT DIRECTORY
-		File folder = new File("G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\");
+		File folder = new File(inputDirectory);
 		File[] listOfFiles = folder.listFiles();
 		int i = 0;	//count for allFiles array of matricies
 		Boolean isTreatment = false;
@@ -96,7 +110,7 @@ public class Multi_NET_Analysis {
 
 		//computes new parameters and updates matrix with new param values
 		for(Matrix m: allFiles){
-			m.update(average, NETcutoff);
+			m.update(average, NETcutoff1, NETcutoff2, NETcutoff3, NETcutoff4);
 			m.createCSV(outputDirectory);
 		}
 		
@@ -199,7 +213,7 @@ public class Multi_NET_Analysis {
 				
 				//computes averages
 				for (Double q: treatments) {
-					if (q > NETcutoff) {
+					if (q > NETcutoff1) {
 						treatmentNETs++;
 						avgTreatment = avgTreatment + q;
 					} else {
@@ -207,7 +221,7 @@ public class Multi_NET_Analysis {
 					}
 				}
 				for (Double w: nonTreatment) {
-					if (w > NETcutoff) {
+					if (w > NETcutoff1) {
 						nonTreatmentNETs++;
 						avgNonTreatment = avgNonTreatment + w;
 					} else {
