@@ -52,18 +52,18 @@ public class Multi_NET_Analysis {
 		//INPUT DIRECTORY
 		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
 		//UPPER STANDARD CUTOFF VALUE
-		upperCutoff = 1.5;
+		upperCutoff = 1.4;
 		//LOWER STANDARD CUTOFF VALUE
 		lowerCutoff = 1.5;
 		
 		//NET CUTOFF VALUE 1
-		NETcutoff1 = 2.0;
+		NETcutoff1 = 3.0;
 		//NET CUTOFF VALUE 2
-		NETcutoff2 = 3.0;
+		NETcutoff2 = 4.0;
 		//NET CUTOFF VALUE 3
-		NETcutoff3 = 4.0;
+		NETcutoff3 = 5.0;
 		//NET CUTOFF VALUE 4
-		NETcutoff4 = 5.0;
+		NETcutoff4 = 6.0;
 		
 		//TREATMENT COMPARING W/IN SUBJECT
 		treatment = "IO";
@@ -87,8 +87,7 @@ public class Multi_NET_Analysis {
 				if (fileName.contains(treatment)) {
 					isTreatment = true;
 				}
-				System.out.println(fileName);
-				System.out.println(isTreatment);
+
 				if (check.equals("csv")){	
 					Matrix newMatrix = new Matrix(cFile, fileName, isTreatment);
 					allFiles.add(newMatrix);
@@ -142,6 +141,9 @@ public class Multi_NET_Analysis {
 		for (int i=0; i<5; i++) {
 			average = average + values.get(i); } 
 		average = average/5;
+		
+		System.out.println(average);
+		
 		return average;
 	}
 
@@ -191,74 +193,125 @@ public class Multi_NET_Analysis {
 	private static void totalCSV() throws FileNotFoundException {
 		// TODO Auto-generated method stub
 		//compute average NETosis and output to CSV
+				ArrayList<Double> nonTreatmentNormalized = new ArrayList<Double>();
+				ArrayList<Double> treatmentsNormalized = new ArrayList<Double>();
 				ArrayList<Double> nonTreatment = new ArrayList<Double>();
 				ArrayList<Double> treatments = new ArrayList<Double>();
 				int treatmentNETs = 0;
 				int nonTreatmentNETs = 0;
-				Double treatmentNETosis = 0.0;
-				Double nonTreatmentNETosis = 0.0;
-				Double avgTreatment = 0.0;
-				Double avgNonTreatment = 0.0;
+				Double treatmentNETosis, nonTreatmentNETosis, avgTreatmentNormalized, avgNonTreatmentNormalized, 
+				avgTreatment, avgNonTreatment, treatmentSD, nonTreatmentSD, treatmentNormalizedSD, nonTreatmentNormalizedSD;
+				
+				treatmentNETosis = nonTreatmentNETosis = avgTreatmentNormalized = avgNonTreatmentNormalized =
+				avgTreatment = avgNonTreatment = treatmentNormalizedSD = nonTreatmentNormalizedSD = treatmentSD = nonTreatmentSD = 0.0;
 				
 				//adds all non-outlier RID values from csv files into appropriate
 				//list to be used for average %NETosis and average NET relative area
 				for (Matrix m: allFiles){
 					if (m.isTreatment()){
-						treatments.addAll(m.getNormalizedAreas());
+						treatmentsNormalized.addAll(m.getNormalizedAreas());
+						treatments.addAll(m.getAreas());
 					}
 					else {
-						nonTreatment.addAll(m.getNormalizedAreas());
+						nonTreatmentNormalized.addAll(m.getNormalizedAreas());
+						nonTreatment.addAll(m.getAreas());
 					}
 				}
 				
-				//computes averages
-				for (Double q: treatments) {
-					if (q > NETcutoff1) {
+				//computes normalized averages and calculates %NETosis based on NETcutoff2
+				for (Double q: treatmentsNormalized) {
+					if (q > NETcutoff2) {
 						treatmentNETs++;
-						avgTreatment = avgTreatment + q;
+						avgTreatmentNormalized = avgTreatmentNormalized + q;
+						
 					} else {
-						avgTreatment = avgTreatment + q;
+						avgTreatmentNormalized = avgTreatmentNormalized + q;
 					}
+				}
+				for (Double w: nonTreatmentNormalized) {
+					if (w > NETcutoff2) {
+						nonTreatmentNETs++;
+						avgNonTreatmentNormalized = avgNonTreatmentNormalized + w;
+					} else {
+						avgNonTreatmentNormalized = avgNonTreatmentNormalized + w;
+					}
+				}
+				
+				//computes actual averages
+				for (Double q: treatments) {
+						avgTreatment = avgTreatment + q;
 				}
 				for (Double w: nonTreatment) {
-					if (w > NETcutoff1) {
-						nonTreatmentNETs++;
 						avgNonTreatment = avgNonTreatment + w;
-					} else {
-						avgNonTreatment = avgNonTreatment + w;
-					}
 				}
-
+				
+				
+				//normalized average
+				avgTreatmentNormalized = (avgTreatmentNormalized/treatmentsNormalized.size());
+				avgNonTreatmentNormalized = (avgNonTreatmentNormalized/nonTreatmentNormalized.size());
+				//actual average
 				avgTreatment = (avgTreatment/treatments.size());
 				avgNonTreatment = (avgNonTreatment/nonTreatment.size());
-				treatmentNETosis = ((double) treatmentNETs/treatments.size())*100;
-				nonTreatmentNETosis = ((double) nonTreatmentNETs/nonTreatment.size())*100;
-				Double treatmentSD = 0.0;
-				Double nonTreatmentSD = 0.0;
 				
+				//Percent NETosis
+				treatmentNETosis = ((double) treatmentNETs/treatmentsNormalized.size())*100;
+				nonTreatmentNETosis = ((double) nonTreatmentNETs/nonTreatmentNormalized.size())*100;
+				
+				//computes SD and SEM for normalized areas
+				for (Double qq: treatmentsNormalized){
+					treatmentNormalizedSD += ((qq-avgTreatmentNormalized)*(qq-avgTreatmentNormalized));
+				}
+				for (Double ww: nonTreatmentNormalized){
+					nonTreatmentNormalizedSD += ((ww-avgNonTreatmentNormalized)*(ww-avgNonTreatmentNormalized));
+				}
+				treatmentNormalizedSD = (treatmentNormalizedSD/(treatmentsNormalized.size()-1));
+				nonTreatmentNormalizedSD = (nonTreatmentNormalizedSD/(nonTreatmentNormalized.size()-1));
+				//SEM
+				Double treatmentNormalizedSEM = (treatmentNormalizedSD/(Math.sqrt(treatmentsNormalized.size())));
+				Double nonTreatmentNormalizedSEM = (nonTreatmentNormalizedSD/(Math.sqrt(nonTreatmentNormalized.size())));
+				
+				//computes SD and SEM for actual areas
 				for (Double qq: treatments){
+					System.out.println(qq);
 					treatmentSD += ((qq-avgTreatment)*(qq-avgTreatment));
 				}
+				
 				for (Double ww: nonTreatment){
 					nonTreatmentSD += ((ww-avgNonTreatment)*(ww-avgNonTreatment));
 				}
 				treatmentSD = (treatmentSD/(treatments.size()-1));
 				nonTreatmentSD = (nonTreatmentSD/(nonTreatment.size()-1));
+				//SEM
 				Double treatmentSEM = (treatmentSD/(Math.sqrt(treatments.size())));
-				Double nonTreatmentSEM = (nonTreatmentSD/(Math.sqrt(nonTreatment.size())));
+				Double nonTreatmentSEM = (nonTreatmentSD/(Math.sqrt(nonTreatment.size())))
+				
+;
 				
 				PrintWriter pw = new PrintWriter(new File(outputDirectory + "Total.csv" + "\\"));
 				StringBuilder sb = new StringBuilder();
 				
+				//relative areas
 				sb.append(" " + ',' + treatment + ',' + "Control" + ',');
 				sb.append('\n');
 				sb.append("% NETosis" + ',' + treatmentNETosis + ',' + nonTreatmentNETosis + ',');
 				sb.append('\n');
-				sb.append("Avg. Normalized Area" + ',' + avgTreatment + ',' + avgNonTreatment + ',');
+				sb.append("Avg. Normalized Area" + ',' + avgTreatmentNormalized + ',' + avgNonTreatmentNormalized + ',');
+				sb.append('\n');
+				sb.append("ANA SD" + ',' + treatmentNormalizedSD + ',' + nonTreatmentNormalizedSD + ',');
+				sb.append('\n');
+				sb.append("ANA SEM" + ',' + treatmentNormalizedSEM + ',' + nonTreatmentNormalizedSEM + ',');
+				
+				//actual areas
+				sb.append('\n');
+				sb.append('\n');
+				sb.append("Avg. Area" + ',' + avgTreatment + ',' + avgNonTreatment + ',');
 				sb.append('\n');
 				sb.append("ANA SD" + ',' + treatmentSD + ',' + nonTreatmentSD + ',');
 				sb.append('\n');
 				sb.append("ANA SEM" + ',' + treatmentSEM + ',' + nonTreatmentSEM + ',');
+				
+				
+				
 				
 				
 				pw.write(sb.toString());

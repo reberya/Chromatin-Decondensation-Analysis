@@ -172,18 +172,18 @@ public class Matrix {
 					NET2++;
 					NET1++;
 				}
-				else if (currMatrix[12][i] >= cutoff3) {
+				else if (currMatrix[12][i] >= cutoff3 && currMatrix[12][i] < cutoff4) {
 					NETs[i] = "NET (" + cutoff3 + "x)";
 					NET3++;
 					NET2++;
 					NET1++;
 				}
-				else if (currMatrix[12][i] >= cutoff2) {
+				else if (currMatrix[12][i] >= cutoff2 && currMatrix[12][i] < cutoff3) {
 					NETs[i] = "NET (" + cutoff2 + "x)";
 					NET2++;
 					NET1++;
 				}
-				else if (currMatrix[12][i] >= cutoff1) {
+				else if (currMatrix[12][i] >= cutoff1 && currMatrix[12][i] < cutoff2) {
 					NETs[i] = "NET (" + cutoff1 + "x)";
 					NET1++;
 				}
@@ -361,6 +361,18 @@ public class Matrix {
 
 		}
 		return normAreas;
+	}
+
+
+	public Collection<? extends Double> getAreas() {
+		ArrayList<Double> areas = new ArrayList<Double>();
+		for (Double D: currMatrix[1]){
+			if (D != null) {
+				areas.add(D);
+			}
+
+		}
+		return areas;
 	}
 
 }
