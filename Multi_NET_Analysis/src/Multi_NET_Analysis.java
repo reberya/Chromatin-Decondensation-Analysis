@@ -132,7 +132,7 @@ public class Multi_NET_Analysis {
 
 		//collects all values within files in folder
 		for (Matrix x: list){
-			values.addAll(x.getNonOutliers());}
+			values.addAll(x.getNonOutlierAreas());}
 
 		//sorts values from low to high
 		values.sort(null);
@@ -141,6 +141,7 @@ public class Multi_NET_Analysis {
 		for (int i=0; i<5; i++) {
 			average = average + values.get(i); } 
 		average = average/5;
+		
 		
 		System.out.println(average);
 		
@@ -181,6 +182,7 @@ public class Multi_NET_Analysis {
 		//sets RID CUTOFF VALUES
 		upperCutoff = average + (upperCutoff*SD);
 		lowerCutoff = average - (lowerCutoff*SD);
+		
 	}
 	
 	
@@ -200,21 +202,21 @@ public class Multi_NET_Analysis {
 				int treatmentNETs = 0;
 				int nonTreatmentNETs = 0;
 				Double treatmentNETosis, nonTreatmentNETosis, avgTreatmentNormalized, avgNonTreatmentNormalized, 
-				avgTreatment, avgNonTreatment, treatmentSD, nonTreatmentSD, treatmentNormalizedSD, nonTreatmentNormalizedSD;
+				avgTreatment, avgNonTreatment, treatmentSD, nonTreatmentSD, treatmentNormalizedSD, nonTreatmentNormalizedSD, ttest;
 				
 				treatmentNETosis = nonTreatmentNETosis = avgTreatmentNormalized = avgNonTreatmentNormalized =
-				avgTreatment = avgNonTreatment = treatmentNormalizedSD = nonTreatmentNormalizedSD = treatmentSD = nonTreatmentSD = 0.0;
+				avgTreatment = avgNonTreatment = treatmentNormalizedSD = nonTreatmentNormalizedSD = treatmentSD = nonTreatmentSD = ttest = 0.0;
 				
 				//adds all non-outlier RID values from csv files into appropriate
 				//list to be used for average %NETosis and average NET relative area
 				for (Matrix m: allFiles){
 					if (m.isTreatment()){
 						treatmentsNormalized.addAll(m.getNormalizedAreas());
-						treatments.addAll(m.getAreas());
+						treatments.addAll(m.getNonOutlierAreas());
 					}
 					else {
 						nonTreatmentNormalized.addAll(m.getNormalizedAreas());
-						nonTreatment.addAll(m.getAreas());
+						nonTreatment.addAll(m.getNonOutlierAreas());
 					}
 				}
 				
@@ -245,7 +247,6 @@ public class Multi_NET_Analysis {
 						avgNonTreatment = avgNonTreatment + w;
 				}
 				
-				
 				//normalized average
 				avgTreatmentNormalized = (avgTreatmentNormalized/treatmentsNormalized.size());
 				avgNonTreatmentNormalized = (avgNonTreatmentNormalized/nonTreatmentNormalized.size());
@@ -264,28 +265,36 @@ public class Multi_NET_Analysis {
 				for (Double ww: nonTreatmentNormalized){
 					nonTreatmentNormalizedSD += ((ww-avgNonTreatmentNormalized)*(ww-avgNonTreatmentNormalized));
 				}
-				treatmentNormalizedSD = (treatmentNormalizedSD/(treatmentsNormalized.size()-1));
-				nonTreatmentNormalizedSD = (nonTreatmentNormalizedSD/(nonTreatmentNormalized.size()-1));
+				treatmentNormalizedSD = Math.sqrt(treatmentNormalizedSD/(treatmentsNormalized.size()-1));
+				nonTreatmentNormalizedSD = Math.sqrt(nonTreatmentNormalizedSD/(nonTreatmentNormalized.size()-1));
+				
 				//SEM
 				Double treatmentNormalizedSEM = (treatmentNormalizedSD/(Math.sqrt(treatmentsNormalized.size())));
 				Double nonTreatmentNormalizedSEM = (nonTreatmentNormalizedSD/(Math.sqrt(nonTreatmentNormalized.size())));
 				
 				//computes SD and SEM for actual areas
 				for (Double qq: treatments){
-					System.out.println(qq);
 					treatmentSD += ((qq-avgTreatment)*(qq-avgTreatment));
 				}
-				
 				for (Double ww: nonTreatment){
 					nonTreatmentSD += ((ww-avgNonTreatment)*(ww-avgNonTreatment));
 				}
-				treatmentSD = (treatmentSD/(treatments.size()-1));
-				nonTreatmentSD = (nonTreatmentSD/(nonTreatment.size()-1));
+				treatmentSD = Math.sqrt(treatmentSD/(treatments.size()-1));
+				nonTreatmentSD = Math.sqrt(nonTreatmentSD/(nonTreatment.size()-1));
+				
 				//SEM
 				Double treatmentSEM = (treatmentSD/(Math.sqrt(treatments.size())));
-				Double nonTreatmentSEM = (nonTreatmentSD/(Math.sqrt(nonTreatment.size())))
+				Double nonTreatmentSEM = (nonTreatmentSD/(Math.sqrt(nonTreatment.size())));
 				
-;
+				//ttest
+				ttest = (avgTreatment - avgNonTreatment);
+				ttest = ttest/(  Math.sqrt( ((treatmentSEM*treatmentSEM)/treatments.size()) +  ((nonTreatmentSEM*nonTreatmentSEM)/nonTreatment.size()) ) );
+				
+				
+				
+				
+				
+				
 				
 				PrintWriter pw = new PrintWriter(new File(outputDirectory + "Total.csv" + "\\"));
 				StringBuilder sb = new StringBuilder();
@@ -300,6 +309,8 @@ public class Multi_NET_Analysis {
 				sb.append("ANA SD" + ',' + treatmentNormalizedSD + ',' + nonTreatmentNormalizedSD + ',');
 				sb.append('\n');
 				sb.append("ANA SEM" + ',' + treatmentNormalizedSEM + ',' + nonTreatmentNormalizedSEM + ',');
+				sb.append('\n');
+				sb.append("Total Cells" + ',' + treatmentsNormalized.size() + ',' + nonTreatmentNormalized.size() + ',');
 				
 				//actual areas
 				sb.append('\n');
@@ -309,6 +320,11 @@ public class Multi_NET_Analysis {
 				sb.append("ANA SD" + ',' + treatmentSD + ',' + nonTreatmentSD + ',');
 				sb.append('\n');
 				sb.append("ANA SEM" + ',' + treatmentSEM + ',' + nonTreatmentSEM + ',');
+				
+				//ttest
+				sb.append('\n');
+				sb.append('\n');
+				sb.append("tscore:" + ',' + ttest + ',');
 				
 				
 				

@@ -105,7 +105,7 @@ public class Matrix {
 	 * 
 	 * @return nonOutliers
 	 */
-	public ArrayList<Double> getNonOutliers() {
+	public ArrayList<Double> getNonOutlierAreas() {
 		return nonOutlierAreas;
 	}
 
@@ -363,16 +363,5 @@ public class Matrix {
 		return normAreas;
 	}
 
-
-	public Collection<? extends Double> getAreas() {
-		ArrayList<Double> areas = new ArrayList<Double>();
-		for (Double D: currMatrix[1]){
-			if (D != null) {
-				areas.add(D);
-			}
-
-		}
-		return areas;
-	}
 
 }
