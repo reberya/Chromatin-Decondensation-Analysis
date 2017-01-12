@@ -14,7 +14,7 @@ public class Matrix {
 	int numCells;
 	int x;
 	int y;
-	int NET1, NET2, NET3, NET4;
+	int cd1, cd2, cd3, cd4;
 	int condensed;
 	Double upperCutoff;
 	Double lowerCutoff;
@@ -122,23 +122,24 @@ public class Matrix {
 	 * @return the updated matrix 
 	 */
 	public void update(Double avg, Double cutoff1, Double cutoff2, 
-			Double cutoff3, Double cutoff4) {
+			Double cutoff3, Double cutoff4, Double NETcutoff) {
 
 		NETs = new String[numCells];
-		NET1 = NET2 = NET3 = NET4 = 0;
+		cd1 = cd2 = cd3 = cd4 = 0;
 		condensed = 0;
-		Double sum, average, variance, SD, uCutoff, lCutoff;
-		sum = average = variance = SD = uCutoff = lCutoff = 0.0;
-		Double areaAvg, meanAvg, minAvg, maxAvg, circAvg, intDenAvg, newRawIntDenAvg,
+		Double average,  relArea, 
+		areaAvg, meanAvg, minAvg, maxAvg, circAvg, intDenAvg, newRawIntDenAvg,
 		ARavg, roundAvg, solidityAvg, RelAreaAvg;
+		average = relArea = areaAvg = meanAvg = minAvg = maxAvg = circAvg
+				= intDenAvg = newRawIntDenAvg = ARavg = roundAvg = solidityAvg 
+				= RelAreaAvg = 0.0;
 
-		//initializes all values to be computed
-		areaAvg = meanAvg = minAvg = maxAvg = circAvg = intDenAvg = newRawIntDenAvg =
-				ARavg = roundAvg = solidityAvg = RelAreaAvg = 0.0;
 		average = avg;
 
 		//calculates averages excluding outliers
 		int count = 0;
+		int NETcount = 0;
+		
 
 		for (int i=0; i<numCells; i++){
 			if (!outlierPos.contains(i)){
@@ -157,35 +158,33 @@ public class Matrix {
 
 				//adds nonOutliers to column 11
 				currMatrix[11][i] = currMatrix[7][i];
-				//computes relative area for each cell that's not an outlier
-				currMatrix[12][i] = (double)((currMatrix[1][i])/average);
+				//computes rounded relative area for each cell that's not an outlier
+				relArea = (double)((currMatrix[1][i])/average);
+				relArea = (double) Math.round(relArea*100);
+				relArea = relArea/100;
+				currMatrix[12][i] = relArea;
 				
-				//IDs degree of chromatin decondensation based on user defined cutoffs
-				if (currMatrix[12][i] < cutoff1){
+				//NET vs non NET
+				if (currMatrix[12][i] >= NETcutoff) {
+					NETs[i] = "NET (" + NETcutoff + "x)";
+					NETcount++;
+				}
+				else if (currMatrix[12][i] < NETcutoff){
 					NETs[i] = "x";
 				}
-				
-				else if (currMatrix[12][i] >= cutoff4) {
-					NETs[i] = "NET (" + cutoff4 + "x)";
-					NET4++;
-					NET3++;
-					NET2++;
-					NET1++;
-				}
-				else if (currMatrix[12][i] >= cutoff3 && currMatrix[12][i] < cutoff4) {
-					NETs[i] = "NET (" + cutoff3 + "x)";
-					NET3++;
-					NET2++;
-					NET1++;
-				}
-				else if (currMatrix[12][i] >= cutoff2 && currMatrix[12][i] < cutoff3) {
-					NETs[i] = "NET (" + cutoff2 + "x)";
-					NET2++;
-					NET1++;
-				}
-				else if (currMatrix[12][i] >= cutoff1 && currMatrix[12][i] < cutoff2) {
-					NETs[i] = "NET (" + cutoff1 + "x)";
-					NET1++;
+						
+				//Chromatin Decondensation
+				if (currMatrix[12][i] >= cutoff4) {
+					cd4++;
+				} 
+				if (currMatrix[12][i] >= cutoff3) {
+					cd3++;
+				} 
+				if (currMatrix[12][i] >= cutoff2) {
+					cd2++;
+				} 
+				if (currMatrix[12][i] >= cutoff1) {
+					cd1++;
 				}
 				
 				//computes relative average area
@@ -206,7 +205,7 @@ public class Matrix {
 		labels[13] = "NET?";
 
 		//stores new average labels in array newLabels
-		newLabels = new String[24];
+		newLabels = new String[26];
 		newLabels[1] = "Old RID Average:";
 		newLabels[2] = "Upper cutoff:";
 		newLabels[3] = "Lower cutoff:";
@@ -221,14 +220,16 @@ public class Matrix {
 		newLabels[12] = "Round Average:";
 		newLabels[13] = "Solidity Average:";
 		newLabels[14] = "Relative Area Average:";
-		newLabels[15] = "(" + cutoff1 + "x) %Chromatin Decondensation";
-		newLabels[16] = "(" + cutoff2 + "x) %Chromatin Decondensation";
-		newLabels[17] = "(" + cutoff3 + "x) %Chromatin Decondensation";
-		newLabels[18] = "(" + cutoff4 + "x) %Chromatin Decondensation";
+		newLabels[15] = "(" + cutoff1 + "x) %CD";
+		newLabels[16] = "(" + cutoff2 + "x) %CD";
+		newLabels[17] = "(" + cutoff3 + "x) %CD";
+		newLabels[18] = "(" + cutoff4 + "x) %CD";
 		newLabels[19] = "(" + cutoff1 + "x) #:";
 		newLabels[20] = "(" + cutoff2 + "x) #:";
 		newLabels[21] = "(" + cutoff3 + "x) #:";
 		newLabels[22] = "(" + cutoff4 + "x) #:";
+		newLabels[23] =  "% NETs " + "(" + NETcutoff + "x):";
+		newLabels[24] = "# NETs (" + NETcutoff + "x):";
 		
 		//adds new averages to matrix
 		currMatrix[15][1] = oldRID;
@@ -245,14 +246,16 @@ public class Matrix {
 		currMatrix[15][12] = roundAvg/count;
 		currMatrix[15][13] = solidityAvg/count;		
 		currMatrix[15][14] = RelAreaAvg/count;	
-		currMatrix[15][15] = (double) ((double)NET1*100/(count));	
-		currMatrix[15][16] = (double) ((double)NET2*100/(count));
-		currMatrix[15][17] = (double) ((double)NET3*100/(count));	
-		currMatrix[15][18] = (double) ((double)NET4*100/(count));
-		currMatrix[15][19] = (double) NET1;
-		currMatrix[15][20] = (double) NET2;
-		currMatrix[15][21] = (double) NET3;
-		currMatrix[15][22] = (double) NET4;
+		currMatrix[15][15] = (double) ((double)cd1*100/(count));	
+		currMatrix[15][16] = (double) ((double)cd2*100/(count));
+		currMatrix[15][17] = (double) ((double)cd3*100/(count));	
+		currMatrix[15][18] = (double) ((double)cd4*100/(count));
+		currMatrix[15][19] = (double) cd1;
+		currMatrix[15][20] = (double) cd2;
+		currMatrix[15][21] = (double) cd3;
+		currMatrix[15][22] = (double) cd4;
+		currMatrix[15][23] = (double) ((double) NETcount *100/(count));
+		currMatrix[15][24] = (double) NETcount;
 
 	}
 
@@ -273,11 +276,11 @@ public class Matrix {
 		sb.append('\n');
 
 		//for each row up to and including row 13 (all calculated)
-		for (int row=0; row<22; row++){
+		for (int row=0; row<24; row++){
 			//for each column
 			for(int col=0; col<16; col++){
 				//adds outlier column
-				if (col>14 && row <22){
+				if (col>14 && row <24){
 					sb.append(newLabels[row+1] + ",");
 					sb.append(currMatrix[15][row+1] + ",");
 				} 
@@ -302,7 +305,7 @@ public class Matrix {
 
 		//adds remaining rows of data
 		if (numCells>13){
-			for (int nRow=22; nRow<numCells; nRow++){
+			for (int nRow=24; nRow<numCells; nRow++){
 				for(int col=0; col<14; col++){
 					if (col == 13) {
 						sb.append(NETs[nRow] + ",");

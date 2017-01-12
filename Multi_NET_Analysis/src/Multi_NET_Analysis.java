@@ -30,10 +30,11 @@ import java.util.Scanner;
 public class Multi_NET_Analysis {
 //
 	//user determined parameters
-	static Double NETcutoff1, NETcutoff2, NETcutoff3, NETcutoff4;	//cutoff level to determine whether NET
+	static Double CDcutoff1, CDcutoff2, CDcutoff3, CDcutoff4;	//cutoff level to determine whether NET
 	static String outputDirectory, inputDirectory;		//directory files will be saved to
 	static Double upperCutoff;			//upper cutoff SD
 	static Double lowerCutoff;			//lower cutoff SD
+	static Double NETcutoff;
 	static String treatment;
 
 	//program parameters
@@ -54,16 +55,19 @@ public class Multi_NET_Analysis {
 		//UPPER STANDARD CUTOFF VALUE
 		upperCutoff = 1.4;
 		//LOWER STANDARD CUTOFF VALUE
-		lowerCutoff = 1.5;
+		lowerCutoff = 1.3;
 		
-		//NET CUTOFF VALUE 1
-		NETcutoff1 = 3.0;
-		//NET CUTOFF VALUE 2
-		NETcutoff2 = 4.0;
-		//NET CUTOFF VALUE 3
-		NETcutoff3 = 5.0;
-		//NET CUTOFF VALUE 4
-		NETcutoff4 = 6.0;
+		//CHROMATIN DECONDENSATION CUTOFF VALUE 1
+		CDcutoff1 = 3.0;
+		//CHROMATIN DECONDENSATION CUTOFF VALUE 2
+		CDcutoff2 = 4.0;
+		//CHROMATIN DECONDENSATION CUTOFF VALUE 3
+		CDcutoff3 = 5.0;
+		//CHROMATIN DECONDENSATION CUTOFF VALUE 4
+		CDcutoff4 = 6.0;
+		
+		//NET CUTOFF
+		NETcutoff = 4.7;
 		
 		//TREATMENT COMPARING W/IN SUBJECT
 		treatment = "IO";
@@ -109,7 +113,7 @@ public class Multi_NET_Analysis {
 
 		//computes new parameters and updates matrix with new param values
 		for(Matrix m: allFiles){
-			m.update(average, NETcutoff1, NETcutoff2, NETcutoff3, NETcutoff4);
+			m.update(average, CDcutoff1, CDcutoff2, CDcutoff3, CDcutoff4, NETcutoff);
 			m.createCSV(outputDirectory);
 		}
 		
@@ -180,8 +184,15 @@ public class Multi_NET_Analysis {
 		SD = Math.sqrt(variance);
 
 		//sets RID CUTOFF VALUES
+		System.out.println(average);
+		
 		upperCutoff = average + (upperCutoff*SD);
 		lowerCutoff = average - (lowerCutoff*SD);
+		
+		//TODO
+		if (lowerCutoff < 20000.0){
+			lowerCutoff = 20000.0;
+		}
 		
 	}
 	
@@ -193,7 +204,6 @@ public class Multi_NET_Analysis {
 	 * @throws FileNotFoundException
 	 */
 	private static void totalCSV() throws FileNotFoundException {
-		// TODO Auto-generated method stub
 		//compute average NETosis and output to CSV
 				ArrayList<Double> nonTreatmentNormalized = new ArrayList<Double>();
 				ArrayList<Double> treatmentsNormalized = new ArrayList<Double>();
@@ -222,7 +232,7 @@ public class Multi_NET_Analysis {
 				
 				//computes normalized averages and calculates %NETosis based on NETcutoff2
 				for (Double q: treatmentsNormalized) {
-					if (q > NETcutoff2) {
+					if (q > CDcutoff2) {
 						treatmentNETs++;
 						avgTreatmentNormalized = avgTreatmentNormalized + q;
 						
@@ -231,7 +241,7 @@ public class Multi_NET_Analysis {
 					}
 				}
 				for (Double w: nonTreatmentNormalized) {
-					if (w > NETcutoff2) {
+					if (w > CDcutoff2) {
 						nonTreatmentNETs++;
 						avgNonTreatmentNormalized = avgNonTreatmentNormalized + w;
 					} else {
@@ -325,10 +335,6 @@ public class Multi_NET_Analysis {
 				sb.append('\n');
 				sb.append('\n');
 				sb.append("tscore:" + ',' + ttest + ',');
-				
-				
-				
-				
 				
 				pw.write(sb.toString());
 				pw.close();
