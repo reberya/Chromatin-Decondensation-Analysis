@@ -3,25 +3,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 /**
- * TEST BRANCH (12.23.2016)
- * 		Added features from master:
- * 			-multiple NET cutoffs
- * 			-number of NETs per image by cutoff
- * 
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
  * modified .csv files to specified folder. Program eliminates 
- * outlier cell values by 
- * 
- * calculating average of 5 smallest cells
+ * outlier cell values by calculating average of 5 smallest cells
  * from all images w/in folder. That average is used to normalize 
- * all other cells to determine if NET. 
- * averages for all fields.
+ * all other cells to determine degree of chromatin decondensation
+ * and if NET or not based on user defined cutoff. 
+ * 
  * 
  * @author RyanRebernick
  *
@@ -79,7 +71,6 @@ public class Multi_NET_Analysis {
 		//folder from which .csv files taken out of; INPUT DIRECTORY
 		File folder = new File(inputDirectory);
 		File[] listOfFiles = folder.listFiles();
-		int i = 0;	//count for allFiles array of matricies
 		Boolean isTreatment = false;
 
 		for (File cFile : listOfFiles){
@@ -94,8 +85,7 @@ public class Multi_NET_Analysis {
 
 				if (check.equals("csv")){	
 					Matrix newMatrix = new Matrix(cFile, fileName, isTreatment);
-					allFiles.add(newMatrix);
-					i++;		
+					allFiles.add(newMatrix);		
 				}
 			}
 		}
@@ -145,10 +135,6 @@ public class Multi_NET_Analysis {
 		for (int i=0; i<5; i++) {
 			average = average + values.get(i); } 
 		average = average/5;
-		
-		
-		System.out.println(average);
-		
 		return average;
 	}
 
@@ -184,12 +170,11 @@ public class Multi_NET_Analysis {
 		SD = Math.sqrt(variance);
 
 		//sets RID CUTOFF VALUES
-		System.out.println(average);
 		
 		upperCutoff = average + (upperCutoff*SD);
 		lowerCutoff = average - (lowerCutoff*SD);
 		
-		//TODO
+		//ensures lowercutoff eliminates fragments
 		if (lowerCutoff < 20000.0){
 			lowerCutoff = 20000.0;
 		}
@@ -299,12 +284,6 @@ public class Multi_NET_Analysis {
 				//ttest
 				ttest = (avgTreatment - avgNonTreatment);
 				ttest = ttest/(  Math.sqrt( ((treatmentSEM*treatmentSEM)/treatments.size()) +  ((nonTreatmentSEM*nonTreatmentSEM)/nonTreatment.size()) ) );
-				
-				
-				
-				
-				
-				
 				
 				PrintWriter pw = new PrintWriter(new File(outputDirectory + "Total.csv" + "\\"));
 				StringBuilder sb = new StringBuilder();

@@ -41,7 +41,7 @@ public class Matrix {
 		try {
 			//removes labels and store
 			for (int k=0; k<11; k++){
-				labels[k] = scanner.next();
+				labels[k] = scanner.next().trim();
 			} 
 
 			//stores all non-label values in Double[][] "matrix"
@@ -269,9 +269,8 @@ public class Matrix {
 		StringBuilder sb = new StringBuilder();
 
 		//add column labels
-		//TODO: get proper csv string of last 3 collumn label headers
-		for(int num=0; num<11; num++){
-			sb.append(labels[num] + ',');
+		for(int num=0; num<14; num++){
+			sb.append(labels[num] + ",");
 		}
 		sb.append('\n');
 
