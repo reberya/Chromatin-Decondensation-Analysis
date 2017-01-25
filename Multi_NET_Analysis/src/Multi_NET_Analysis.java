@@ -176,6 +176,7 @@ public class Multi_NET_Analysis {
 		
 		//ensures lowercutoff eliminates fragments
 		if (lowerCutoff < 20000.0){
+			//TODO Remove if you want...
 			lowerCutoff = 20000.0;
 		}
 		

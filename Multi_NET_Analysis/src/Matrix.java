@@ -205,7 +205,7 @@ public class Matrix {
 		labels[13] = "NET?";
 
 		//stores new average labels in array newLabels
-		newLabels = new String[26];
+		newLabels = new String[27];
 		newLabels[1] = "Old RID Average:";
 		newLabels[2] = "Upper cutoff:";
 		newLabels[3] = "Lower cutoff:";
@@ -230,6 +230,7 @@ public class Matrix {
 		newLabels[22] = "(" + cutoff4 + "x) #:";
 		newLabels[23] =  "% NETs " + "(" + NETcutoff + "x):";
 		newLabels[24] = "# NETs (" + NETcutoff + "x):";
+		newLabels[25] = "# cells:";
 		
 		//adds new averages to matrix
 		currMatrix[15][1] = oldRID;
@@ -256,7 +257,8 @@ public class Matrix {
 		currMatrix[15][22] = (double) cd4;
 		currMatrix[15][23] = (double) ((double) NETcount *100/(count));
 		currMatrix[15][24] = (double) NETcount;
-
+		currMatrix[15][25] = (double) count;
+		
 	}
 
 	/**
@@ -275,11 +277,11 @@ public class Matrix {
 		sb.append('\n');
 
 		//for each row up to and including row 13 (all calculated)
-		for (int row=0; row<24; row++){
+		for (int row=0; row<25; row++){
 			//for each column
 			for(int col=0; col<16; col++){
 				//adds outlier column
-				if (col>14 && row <24){
+				if (col>14 && row <25){
 					sb.append(newLabels[row+1] + ",");
 					sb.append(currMatrix[15][row+1] + ",");
 				} 
@@ -304,7 +306,7 @@ public class Matrix {
 
 		//adds remaining rows of data
 		if (numCells>13){
-			for (int nRow=24; nRow<numCells; nRow++){
+			for (int nRow=25; nRow<numCells; nRow++){
 				for(int col=0; col<14; col++){
 					if (col == 13) {
 						sb.append(NETs[nRow] + ",");
