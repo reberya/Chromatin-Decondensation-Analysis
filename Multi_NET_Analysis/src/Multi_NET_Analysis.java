@@ -8,12 +8,21 @@ import java.util.ArrayList;
  * 
  * Directs analysis of Fiji NET_analysis output. 
  * Inputs .csv files from a specified folder and outputs 
- * modified .csv files to specified folder. Program eliminates 
- * outlier cell values by calculating average of 5 smallest cells
- * from all images w/in folder. That average is used to normalize 
- * all other cells to determine degree of chromatin decondensation
- * and if NET or not based on user defined cutoff. 
+ * modified .csv files to specified folder. 
  * 
+ * Images from a single subject/sample are analyzed together to
+ * improve sample size and provide accurate measurements.
+ * 
+ * Program pools ROIs from all images within folder. 
+ * It then eliminates outliers based on Raw Integrated Density (RID). 
+ * Any ROIs with a RID greater than a predetermined (value*SD of all ROIs) 
+ * from the mean ROI's RID are excluded. Relative chromatin decondensation 
+ * and %NETosis are calculated by averaging the area of the 5 smallest, 
+ * non-excluded ROI's and dividing the area of the ROI of interest by that value. 
+ *  
+ * The value of chromatin decondensation which defines a NET is based upon
+ * a user defined cutoff. Currently we use 4.72x avg area for Human PMNs
+ * and 5.00 for Murine PMNs.
  * 
  * @author RyanRebernick
  *
@@ -44,8 +53,8 @@ public class Multi_NET_Analysis {
 		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
 		//INPUT DIRECTORY
 		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
-		//UPPER STANDARD CUTOFF VALUE
-		upperCutoff = 1.4;
+		//UPPER STANDARD CUTOFF VALUE		1.4(Human) 1.7(Mouse)
+		upperCutoff = 1.7;
 		//LOWER STANDARD CUTOFF VALUE
 		lowerCutoff = 1.3;
 		
@@ -58,8 +67,8 @@ public class Multi_NET_Analysis {
 		//CHROMATIN DECONDENSATION CUTOFF VALUE 4
 		CDcutoff4 = 6.0;
 		
-		//NET CUTOFF
-		NETcutoff = 4.7;
+		//NET CUTOFF		4.72(human) 5.00(mouse)
+		NETcutoff = 5.0;
 		
 		//TREATMENT COMPARING W/IN SUBJECT
 		treatment = "IO";
@@ -175,9 +184,10 @@ public class Multi_NET_Analysis {
 		lowerCutoff = average - (lowerCutoff*SD);
 		
 		//ensures lowercutoff eliminates fragments
-		if (lowerCutoff < 20000.0){
+		//Mouse(7500.0) 	Human (20000.0)		
+		if (lowerCutoff < 7500.0){
 			//TODO Remove if you want...
-			lowerCutoff = 20000.0;
+			lowerCutoff = 7500.0;
 		}
 		
 	}
