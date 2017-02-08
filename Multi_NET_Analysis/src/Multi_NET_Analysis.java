@@ -53,6 +53,8 @@ public class Multi_NET_Analysis {
 		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
 		//INPUT DIRECTORY
 		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
+		
+		//TODO: Choose value for Human/Mouse
 		//UPPER STANDARD CUTOFF VALUE		1.4(Human) 1.7(Mouse)
 		upperCutoff = 1.7;
 		//LOWER STANDARD CUTOFF VALUE
@@ -67,6 +69,7 @@ public class Multi_NET_Analysis {
 		//CHROMATIN DECONDENSATION CUTOFF VALUE 4
 		CDcutoff4 = 6.0;
 		
+		//TODO: Choose value for Human/Mouse
 		//NET CUTOFF		4.72(human) 5.00(mouse)
 		NETcutoff = 5.0;
 		
@@ -183,10 +186,10 @@ public class Multi_NET_Analysis {
 		upperCutoff = average + (upperCutoff*SD);
 		lowerCutoff = average - (lowerCutoff*SD);
 		
+		//TODO: Choose value for Human/Mouse
 		//ensures lowercutoff eliminates fragments
 		//Mouse(7500.0) 	Human (20000.0)		
 		if (lowerCutoff < 7500.0){
-			//TODO Remove if you want...
 			lowerCutoff = 7500.0;
 		}
 		
