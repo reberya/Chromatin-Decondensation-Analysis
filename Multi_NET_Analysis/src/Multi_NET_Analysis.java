@@ -47,43 +47,24 @@ public class Multi_NET_Analysis {
 
 	/**
 	 * @param args
+	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException {
+	public Multi_NET_Analysis(String output, String input, Double upper, Double lower, Double CD1,
+			Double CD2, Double CD3, Double CD4, Double Net) throws FileNotFoundException {
 		
-		//Graphic user interface
-		Window newGui = new Window();
-		newGui.setVisible(true);
-		
-		//OUTPUT DIRECTORY
-		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
-		//INPUT DIRECTORY
-		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
-		
-		//TODO: Choose value for Human/Mouse
-		//UPPER STANDARD CUTOFF VALUE		1.4(Human) 1.7(Mouse)
-		upperCutoff = 1.4;
-		//LOWER STANDARD CUTOFF VALUE
-		lowerCutoff = 1.3;
-		
-		//CHROMATIN DECONDENSATION CUTOFF VALUE 1
-		CDcutoff1 = 3.0;
-		//CHROMATIN DECONDENSATION CUTOFF VALUE 2
-		CDcutoff2 = 4.0;
-		//CHROMATIN DECONDENSATION CUTOFF VALUE 3
-		CDcutoff3 = 5.0;
-		//CHROMATIN DECONDENSATION CUTOFF VALUE 4
-		CDcutoff4 = 6.0;
-		
-		//TODO: Choose value for Human/Mouse
-		//NET CUTOFF		4.72(human) 5.00(mouse)
-		NETcutoff = 4.72;
-		
-		//TREATMENT COMPARING W/IN SUBJECT
-		treatment = "IO";
+		inputDirectory = input;
+		outputDirectory = output;
+		upperCutoff = upper;
+		lowerCutoff = lower;
+		CDcutoff1 = CD1;
+		CDcutoff2 = CD2;
+		CDcutoff3 = CD3;
+		CDcutoff4 = CD4;
+		NETcutoff = Net;
 
 		allFiles = new ArrayList<Matrix>();	//initializes array to hold all matricies
 		allRID = new ArrayList<Double>();	//array to hold all RIDs for taking average
-
+		treatment = "IO";
 
 		//folder from which .csv files taken out of; INPUT DIRECTORY
 		File folder = new File(inputDirectory);
