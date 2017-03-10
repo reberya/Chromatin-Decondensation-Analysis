@@ -49,6 +49,11 @@ public class Multi_NET_Analysis {
 	 * @param args
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
+		
+		//Graphic user interface
+		Window newGui = new Window();
+		newGui.setVisible(true);
+		
 		//OUTPUT DIRECTORY
 		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
 		//INPUT DIRECTORY
@@ -56,7 +61,7 @@ public class Multi_NET_Analysis {
 		
 		//TODO: Choose value for Human/Mouse
 		//UPPER STANDARD CUTOFF VALUE		1.4(Human) 1.7(Mouse)
-		upperCutoff = 1.7;
+		upperCutoff = 1.4;
 		//LOWER STANDARD CUTOFF VALUE
 		lowerCutoff = 1.3;
 		
@@ -71,7 +76,7 @@ public class Multi_NET_Analysis {
 		
 		//TODO: Choose value for Human/Mouse
 		//NET CUTOFF		4.72(human) 5.00(mouse)
-		NETcutoff = 5.0;
+		NETcutoff = 4.72;
 		
 		//TREATMENT COMPARING W/IN SUBJECT
 		treatment = "IO";
@@ -85,6 +90,8 @@ public class Multi_NET_Analysis {
 		File[] listOfFiles = folder.listFiles();
 		Boolean isTreatment = false;
 
+		//TODO: add minimum image number?
+		
 		for (File cFile : listOfFiles){
 			if(cFile.isFile()) {
 				isTreatment = false;
@@ -189,8 +196,8 @@ public class Multi_NET_Analysis {
 		//TODO: Choose value for Human/Mouse
 		//ensures lowercutoff eliminates fragments
 		//Mouse(7500.0) 	Human (20000.0)		
-		if (lowerCutoff < 7500.0){
-			lowerCutoff = 7500.0;
+		if (lowerCutoff < 20000.0){
+			lowerCutoff = 20000.0;
 		}
 		
 	}
