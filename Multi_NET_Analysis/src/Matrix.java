@@ -6,6 +6,12 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * Stores and modifies the .csv file for each image.
+ * 
+ * @author Ryan Rebernick
+ *
+ */
 public class Matrix {
 
 	String name;
@@ -26,6 +32,15 @@ public class Matrix {
 	Boolean isTreatment;
 
 
+	/**
+	 * 
+	 * Opens the .csv file, stores data and labels separately. 
+	 * 
+	 * @param cFile - the .csv file
+	 * @param fileName - the name of the .csv file
+	 * @param isT	- boolean value documenting whether treatment (optional)
+	 * @throws FileNotFoundException
+	 */
 	public Matrix(File cFile, String fileName, Boolean isT) throws FileNotFoundException {
 		name = fileName;
 		currMatrix = new Double[20][400];
@@ -66,11 +81,10 @@ public class Matrix {
 
 	/**
 	 * Finds and marks the outliers in the current matrix
-	 * @param upperValue 
-	 * @param lowerValue 
+	 * @param upperValue - if above value, then outlier
+	 * @param lowerValue - if below value then outlier
 	 */
 	public void findOutliers(Double lowerValue, Double upperValue) {
-
 		upperCutoff = upperValue;
 		lowerCutoff = lowerValue;
 
@@ -110,17 +124,17 @@ public class Matrix {
 	}
 
 
-	/**
-	 * Updates the matrix to include outliers, relative sizes, 
-	 * and new avergaes excluding outliers
-	 * @param NETcutoff 
-	 * @param nETcutoff4 
-	 * @param nETcutoff3 
-	 * @param nETcutoff2 
-	 * 
-	 * @param average - the average of the 5 smallest cells
-	 * @return the updated matrix 
-	 */
+/**
+ * Updates the matrix to include outliers, relative sizes, 
+ * and new averages excluding outliers.
+ * 
+ * @param avg - the average RID
+ * @param cutoff1 - DNA decondensation cutoff1
+ * @param cutoff2 - DNA decondensation cutoff2
+ * @param cutoff3 - DNA decondensation cutoff3
+ * @param cutoff4 - DNA decondensation cutoff4
+ * @param NETcutoff - the NET cutoff
+ */
 	public void update(Double avg, Double cutoff1, Double cutoff2, 
 			Double cutoff3, Double cutoff4, Double NETcutoff) {
 
@@ -130,9 +144,10 @@ public class Matrix {
 		Double average,  relArea, 
 		areaAvg, meanAvg, minAvg, maxAvg, circAvg, intDenAvg, newRawIntDenAvg,
 		ARavg, roundAvg, solidityAvg, RelAreaAvg;
+		
 		average = relArea = areaAvg = meanAvg = minAvg = maxAvg = circAvg
-				= intDenAvg = newRawIntDenAvg = ARavg = roundAvg = solidityAvg 
-				= RelAreaAvg = 0.0;
+		= intDenAvg = newRawIntDenAvg = ARavg = roundAvg = solidityAvg 
+		= RelAreaAvg = 0.0;
 
 		average = avg;
 
@@ -140,7 +155,7 @@ public class Matrix {
 		int count = 0;
 		int NETcount = 0;
 		
-
+		//calculates averages if not outlier
 		for (int i=0; i<numCells; i++){
 			if (!outlierPos.contains(i)){
 				count++;
@@ -263,7 +278,8 @@ public class Matrix {
 
 	/**
 	 * creates updated CSV file in location passed to it
-	 * @param outputDirectory
+	 * 
+	 * @param outputDirectory - directory to output to
 	 * @throws FileNotFoundException 
 	 */
 	public void createCSV(String outputDirectory) throws FileNotFoundException {
@@ -329,8 +345,7 @@ public class Matrix {
 
 
 	/**
-	 * returns list of RID for all cells in matrix
-	 * @return
+	 * @return list of RID for all cells in matrix
 	 */
 	public Collection<? extends Double> getRID() {
 		ArrayList<Double> RID = new ArrayList<Double>();
@@ -346,15 +361,16 @@ public class Matrix {
 
 	/**
 	 * 
-	 * @return true if is IO
+	 * @return true if is treatment
 	 */
 	public boolean isTreatment() {
 		return isTreatment;
 	}
 
+	
 	/**
 	 * Compiles normalized areas and exports ArrayList
-	 * @return
+	 * @return ArrayList of normalized areas
 	 */
 	public Collection<? extends Double> getNormalizedAreas() {
 		ArrayList<Double> normAreas = new ArrayList<Double>();
@@ -366,6 +382,4 @@ public class Matrix {
 		}
 		return normAreas;
 	}
-
-
 }
