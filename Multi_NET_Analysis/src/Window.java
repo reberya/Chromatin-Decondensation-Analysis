@@ -36,13 +36,14 @@ public class Window extends JFrame {
 	static String upperCutoff;			//upper cutoff SD
 	static String lowerCutoff;			//lower cutoff SD
 	static String NETcutoff;			//cutoff for NETs
+	static String minimumRID;			//lowest RID value for fragment elimination
 	static String treatment;			//treatment (user defined)
 	static String settingsName;			//Name of settings
 
 
 
 	public Window() {
-		
+
 		super("DNA Area and NETosis Analysis (DANA)");	
 		setSize(650,400);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -51,9 +52,9 @@ public class Window extends JFrame {
 		try {
 			setIconImage(ImageIO.read(new File("Icon/DANA_logo.png")));
 		} catch (IOException e3) {}
-		
-		inputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\FIJI_output\\";
-		outputDirectory = "G:\\Team\\Shelef Lab\\NETosis Analysis Program\\JAVA_output\\";
+
+		inputDirectory = "C:\\Users\\reberya\\Desktop\\DANA_II_output\\";
+		outputDirectory = "C:\\Users\\reberya\\Desktop\\DANA_II_output\\";
 		upperCutoff = "1.4";
 		lowerCutoff = "1.3";
 		CDcutoff1 = "3.0";
@@ -61,10 +62,11 @@ public class Window extends JFrame {
 		CDcutoff3 = "5.0";
 		CDcutoff4 = "6.0";
 		NETcutoff = "4.72";
+		minimumRID = "20000";
 		settingsName = "Default";
-		
 
-		
+
+
 
 		//CENTER - Panel A
 		JPanel pA = new JPanel(new GridBagLayout());
@@ -101,7 +103,7 @@ public class Window extends JFrame {
 		gbc2.insets = new Insets(1,1,5,5);
 
 		//Upper Elimination Cutoff
-		JLabel uCut = new JLabel("Upper Elimination Cutoff: ");
+		JLabel uCut = new JLabel("Upper Elimination Cutoff Parameter: ");
 		JTextField uCutTF = new JTextField(upperCutoff, 5); 
 		gbc2.gridx = 0;
 		gbc2.gridy = 0;
@@ -111,7 +113,7 @@ public class Window extends JFrame {
 		pB.add(uCutTF, gbc2);
 
 		//Lower Elimination Cutoff
-		JLabel LCut = new JLabel("Lower Elimination Cutoff: ");
+		JLabel LCut = new JLabel("Lower Elimination Cutoff Parameter: ");
 		JTextField LCutTF = new JTextField(lowerCutoff, 5); 
 		gbc2.gridx = 0;
 		gbc2.gridy = 1;
@@ -122,15 +124,15 @@ public class Window extends JFrame {
 
 		//Minimum RID value
 		JLabel min = new JLabel("Minimum RID value: ");
-		JTextField minTF = new JTextField("20000", 5); 
+		JTextField minTF = new JTextField(minimumRID, 5); 
 		gbc2.gridx = 0;
 		gbc2.gridy = 2;
 		pB.add(min, gbc2);
 		gbc2.gridx = 1;
 		gbc2.gridy = 2;
 		pB.add(minTF, gbc2);
-		
-		
+
+
 		//DNA decondensation cutoffs
 		JLabel DNACut1 = new JLabel("DNA Decondensation Cutoff 1: ");
 		JLabel DNACut2 = new JLabel("DNA Decondensation Cutoff 2: ");
@@ -188,7 +190,7 @@ public class Window extends JFrame {
 		gbc2.gridx = 1;
 		gbc2.gridy = 8;
 		pB.add(oParamTF, gbc2);
-		
+
 		add(pB, BorderLayout.CENTER);
 
 		//Settings name, Save, load, run buttons
@@ -250,9 +252,9 @@ public class Window extends JFrame {
 					} catch (IOException e2) {
 						e2.printStackTrace();
 					}
-					
 
-					
+
+
 				}
 				else if(rVal == JFileChooser.CANCEL_OPTION){
 					JOptionPane.showMessageDialog(null, "File save has been canceled");
@@ -260,7 +262,7 @@ public class Window extends JFrame {
 
 			}
 		});
-		
+
 		gbc3.gridx = 1;
 		gbc3.gridy = 1;
 		pC.add(save, gbc3);
@@ -319,6 +321,7 @@ public class Window extends JFrame {
 							}
 						}
 
+						in.close();
 
 					} catch (IOException e1) {
 						e1.printStackTrace();
@@ -340,27 +343,92 @@ public class Window extends JFrame {
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				boolean tripped = false;
+				Double UCut, LCut, min, DNACut1, DNACut2,DNACut3,DNACut4, NETcut;
+				UCut = LCut = min = DNACut1 = DNACut2 = DNACut3 = DNACut4 = NETcut = null;
+
 				//Get directory
 				String indir = inDirTF.getText();
 				String outdir = outDirTF.getText();
-				Double UCut = Double.parseDouble(uCutTF.getText());
-				Double LCut = Double.parseDouble(LCutTF.getText());
-				Double min = Double.parseDouble(minTF.getText());
-				Double DNAcut1 = Double.parseDouble(DNACutTF1.getText());
-				Double DNAcut2 = Double.parseDouble(DNACutTF2.getText());
-				Double DNAcut3 = Double.parseDouble(DNACutTF3.getText());
-				Double DNAcut4 = Double.parseDouble(DNACutTF4.getText());
-				Double NETcut = Double.parseDouble(NETcutTF.getText());
-				String oParameter = oParamTF.getText();
 
-				Multi_NET_Analysis m;
+				//Get params
 				try {
-					m = new Multi_NET_Analysis(outdir, indir, UCut, LCut, min, DNAcut1, DNAcut2,
-							DNAcut3, DNAcut4, NETcut, oParameter);
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
+					UCut = Double.parseDouble(uCutTF.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with the Upper "
+							+ "Elimination Cutoff Parameter");
+					tripped = true;
+				}
+				try {
+					LCut = Double.parseDouble(LCutTF.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with the Lower "
+							+ "Elimination Cutoff Parameter");
+					tripped = true;
+				}
+				try {
+					min = Double.parseDouble(minTF.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with the Minimum "
+							+ "RID Value");
+					tripped = true;
+				}
+				try {	
+					DNACut1 = Double.parseDouble(DNACutTF1.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with DNA "
+							+ "Decondensation Cutoff 1");
+					tripped = true;
+				}
+				try {
+					DNACut2 = Double.parseDouble(DNACutTF2.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with DNA "
+							+ "Decondensation Cutoff 2");
+					tripped = true;
+				}
+				try {
+					DNACut3 = Double.parseDouble(DNACutTF3.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with DNA "
+							+ "Decondensation Cutoff 3");
+					tripped = true;
+				}
+				try {
+					DNACut4 = Double.parseDouble(DNACutTF4.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with DNA "
+							+ "Decondensation Cutoff 4");
+					tripped = true;
+				}
+				try {
+					NETcut = Double.parseDouble(NETcutTF.getText());
+				} catch(NumberFormatException n1){
+					JOptionPane.showMessageDialog(null, "There was a problem encountered with the NET "
+							+ "Cutoff");
+					tripped = true;
 				}
 
+				String oParameter = oParamTF.getText();
+
+				if (tripped == false){
+					try {
+						Multi_NET_Analysis m = new Multi_NET_Analysis(outdir, indir, UCut, LCut, min, DNACut1, DNACut2,
+								DNACut3, DNACut4, NETcut, oParameter);
+
+						//error messages for file not found warnings
+					} catch (FileNotFoundException e1) {
+						if (e1.getMessage().equals("oE1")){
+							JOptionPane.showMessageDialog(null, "Output directory: " + outdir + " could not be found.");
+						}
+
+					}catch (NullPointerException e2){
+						JOptionPane.showMessageDialog(null, "There was a problem encountered with the input directory: "
+								+ indir);
+					}catch(NumberFormatException n1){
+						JOptionPane.showMessageDialog(null, "There was a problem encountered with: " + n1.getMessage());
+					}
+				}
 
 			}
 		});

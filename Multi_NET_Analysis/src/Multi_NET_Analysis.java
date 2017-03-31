@@ -55,7 +55,7 @@ public class Multi_NET_Analysis {
 	 * @throws FileNotFoundException 
 	 */
 	public Multi_NET_Analysis(String output, String input, Double upper, Double lower, Double min, Double CD1,
-			Double CD2, Double CD3, Double CD4, Double Net, String oParam) throws FileNotFoundException {
+			Double CD2, Double CD3, Double CD4, Double Net, String oParam) throws FileNotFoundException  {
 		
 		inputDirectory = input;
 		outputDirectory = output;
@@ -73,6 +73,8 @@ public class Multi_NET_Analysis {
 		treatment = oParam;
 
 		//folder from which .csv files taken out of; INPUT DIRECTORY
+
+//		try {
 		File folder = new File(inputDirectory);
 		File[] listOfFiles = folder.listFiles();
 		Boolean isTreatment = false;
@@ -89,13 +91,20 @@ public class Multi_NET_Analysis {
 					isTreatment = true;
 				}
 
-				if (check.equals("csv")){	
-					Matrix newMatrix = new Matrix(cFile, fileName, isTreatment);
-					allFiles.add(newMatrix);		
+				if (check.equals("csv")){
+					Matrix newMatrix;
+					try {
+					newMatrix = new Matrix(cFile, fileName, isTreatment);
+					allFiles.add(newMatrix);
+					} catch (NumberFormatException n2){
+						throw new NumberFormatException(fileName);
+					}
+							
 				}
 			}
 		}
 
+		
 		//Find cutoff values from RID of all matricies in allFiles
 		findCutoffs();
 
@@ -110,7 +119,12 @@ public class Multi_NET_Analysis {
 		//computes new parameters and updates matrix with new param values
 		for(Matrix m: allFiles){
 			m.update(average, CDcutoff1, CDcutoff2, CDcutoff3, CDcutoff4, NETcutoff);
+			
+			try {
 			m.createCSV(outputDirectory);
+			} catch (FileNotFoundException e2) {
+				throw new FileNotFoundException("oE1");
+			}
 		}
 		
 		//creates CSV file containing summary of data
