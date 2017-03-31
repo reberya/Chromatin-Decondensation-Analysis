@@ -26,6 +26,9 @@ public class Matrix {
 	Double lowerCutoff;
 	Double oldRID;
 	ArrayList<Integer> outlierPos;
+	ArrayList<Integer> multiplePos;
+	ArrayList<Integer> fragmentPos;
+	
 	ArrayList<Double> nonOutlierAreas;
 	String [] NETs;
 	String[] newLabels;
@@ -90,6 +93,9 @@ public class Matrix {
 
 		//Marks cells outside of cutoff values (outliers)
 		outlierPos = new ArrayList<Integer>();
+		fragmentPos = new ArrayList<Integer>();
+		multiplePos = new ArrayList<Integer>();
+		
 		nonOutlierAreas = new ArrayList<Double>();
 		int pos = 0;
 		for (Double q: currMatrix[7]) {
@@ -98,9 +104,15 @@ public class Matrix {
 				break;
 			}
 			//if outlier, fill pos w/ null value (col11) and add to list of outlier pos.
-			else if (q>= upperValue || q<=lowerValue){
+			else if ( q>= upperValue){
 				currMatrix[11][pos] = null;
 				outlierPos.add(pos);
+				multiplePos.add(pos);
+				
+			}
+			else if (q <= lowerValue){
+				currMatrix[11][pos] = null;
+				fragmentPos.add(pos);
 			}
 			//if not outlier fill in column 11
 			else {
@@ -207,72 +219,88 @@ public class Matrix {
 
 			}
 			//else outlier values for relative ara and Nonoutlier are null
-			else{
+			else if (fragmentPos.contains(i)){
 				currMatrix[11][i] = null;
 				currMatrix[12][i] = null;
-				NETs[i] = "";
+				NETs[i] = "Fr";
 			}
+			else if (multiplePos.contains(i)){
+				currMatrix[11][i] = null;
+				currMatrix[12][i] = null;
+				NETs[i] = "Mt";
+			}
+			
+			
 		}
 
 		//adds new column labels
 		labels[11] = "NonOutliers";
 		labels[12] = "RelArea";
-		labels[13] = "NET?";
+		labels[13] = "Classification";
 
-		//stores new average labels in array newLabels
-		newLabels = new String[27];
-		newLabels[1] = "Old RID Average:";
-		newLabels[2] = "Upper cutoff:";
-		newLabels[3] = "Lower cutoff:";
-		newLabels[4] = "Area Average:";
-		newLabels[5] = "Mean Average:";
-		newLabels[6] = "Min Average:";
-		newLabels[7] = "Max Average:";
-		newLabels[8] = "Circularity Average:";
-		newLabels[9] = "Integrated Density Average:";
-		newLabels[10] = "New RID Average::";
-		newLabels[11] = "AR Average:";
-		newLabels[12] = "Round Average:";
-		newLabels[13] = "Solidity Average:";
-		newLabels[14] = "Relative Area Average:";
-		newLabels[15] = "(" + cutoff1 + "x) %CD";
-		newLabels[16] = "(" + cutoff2 + "x) %CD";
-		newLabels[17] = "(" + cutoff3 + "x) %CD";
-		newLabels[18] = "(" + cutoff4 + "x) %CD";
-		newLabels[19] = "(" + cutoff1 + "x) #:";
-		newLabels[20] = "(" + cutoff2 + "x) #:";
-		newLabels[21] = "(" + cutoff3 + "x) #:";
-		newLabels[22] = "(" + cutoff4 + "x) #:";
-		newLabels[23] =  "% NETs " + "(" + NETcutoff + "x):";
-		newLabels[24] = "# NETs (" + NETcutoff + "x):";
-		newLabels[25] = "# cells:";
+		//stores new average labels in array newLabels	
+		newLabels = new String[31];
+		newLabels[1] = "Area Average:";
+		newLabels[2] = "Mean Average:";
+		newLabels[3] = "Min Average:";
+		newLabels[4] = "Max Average:";
+		newLabels[5] = "Circularity Average:";
+		newLabels[6] = "Integrated Density Average:";
+		newLabels[7] = "New RID Average::";
+		newLabels[8] = "AR Average:";
+		newLabels[9] = "Round Average:";
+		newLabels[10] = "Solidity Average:";
+		newLabels[11] = "Relative Area Average:";
+		newLabels[12] = "";	//Space
+		newLabels[13] = "Lower cutoff:";
+		newLabels[14] = "Fragments Excluded:";
+		newLabels[15] = "Upper cutoff:";
+		newLabels[16] = "Multiples Excluded:";
+		newLabels[17] = "";	//Space
+		newLabels[18] = "(" + cutoff1 + "x) %CD";
+		newLabels[19] = "(" + cutoff2 + "x) %CD";
+		newLabels[20] = "(" + cutoff3 + "x) %CD";
+		newLabels[21] = "(" + cutoff4 + "x) %CD";
+		newLabels[22] = "(" + cutoff1 + "x) #:";
+		newLabels[23] = "(" + cutoff2 + "x) #:";
+		newLabels[24] = "(" + cutoff3 + "x) #:";
+		newLabels[25] = "(" + cutoff4 + "x) #:";
+		newLabels[26] = "";	//Space
+		newLabels[27] =  "% NETs " + "(" + NETcutoff + "x):";
+		newLabels[28] = "# NETs (" + NETcutoff + "x):";
+		newLabels[29] = "# Cells:";			//25 previously
 		
 		//adds new averages to matrix
-		currMatrix[15][1] = oldRID;
-		currMatrix[15][2] = upperCutoff;
-		currMatrix[15][3] = lowerCutoff;
-		currMatrix[15][4] = areaAvg/count;
-		currMatrix[15][5] =meanAvg/count;
-		currMatrix[15][6] = minAvg/count;
-		currMatrix[15][7] = maxAvg/count;
-		currMatrix[15][8] =circAvg/count;
-		currMatrix[15][9] =intDenAvg/count;
-		currMatrix[15][10] = newRawIntDenAvg/count;
-		currMatrix[15][11] = ARavg/count;
-		currMatrix[15][12] = roundAvg/count;
-		currMatrix[15][13] = solidityAvg/count;		
-		currMatrix[15][14] = RelAreaAvg/count;	
-		currMatrix[15][15] = (double) ((double)cd1*100/(count));	
-		currMatrix[15][16] = (double) ((double)cd2*100/(count));
-		currMatrix[15][17] = (double) ((double)cd3*100/(count));	
-		currMatrix[15][18] = (double) ((double)cd4*100/(count));
-		currMatrix[15][19] = (double) cd1;
-		currMatrix[15][20] = (double) cd2;
-		currMatrix[15][21] = (double) cd3;
-		currMatrix[15][22] = (double) cd4;
-		currMatrix[15][23] = (double) ((double) NETcount *100/(count));
-		currMatrix[15][24] = (double) NETcount;
-		currMatrix[15][25] = (double) count;
+
+		currMatrix[15][1] = areaAvg/count;
+		currMatrix[15][2] =meanAvg/count;
+		currMatrix[15][3] = minAvg/count;
+		currMatrix[15][4] = maxAvg/count;
+		currMatrix[15][5] =circAvg/count;
+		currMatrix[15][6] =intDenAvg/count;
+		currMatrix[15][7] = newRawIntDenAvg/count;
+		currMatrix[15][8] = ARavg/count;
+		currMatrix[15][9] = roundAvg/count;
+		currMatrix[15][10] = solidityAvg/count;		
+		currMatrix[15][11] = RelAreaAvg/count;	
+		//space
+		currMatrix[15][13] = lowerCutoff;
+		currMatrix[15][14] = (double)fragmentPos.size();
+		currMatrix[15][15] = upperCutoff;
+		currMatrix[15][16] = (double)multiplePos.size();
+		//space
+		currMatrix[15][18] = (double) ((double)cd1*100/(count));	
+		currMatrix[15][19] = (double) ((double)cd2*100/(count));
+		currMatrix[15][20] = (double) ((double)cd3*100/(count));	
+		currMatrix[15][21] = (double) ((double)cd4*100/(count));
+		currMatrix[15][22] = (double) cd1;
+		currMatrix[15][23] = (double) cd2;
+		currMatrix[15][24] = (double) cd3;
+		currMatrix[15][25] = (double) cd4;
+		//space
+		currMatrix[15][27] = (double) ((double) NETcount *100/(count));
+		currMatrix[15][28] = (double) NETcount;
+		currMatrix[15][29] = (double) count;
 		
 	}
 
@@ -292,14 +320,21 @@ public class Matrix {
 		}
 		sb.append('\n');
 
-		//for each row up to and including row 13 (all calculated)
-		for (int row=0; row<25; row++){
+		//for each row up to and including row 16 (all calculated)
+		for (int row=0; row<29; row++){
 			//for each column
 			for(int col=0; col<16; col++){
 				//adds outlier column
-				if (col>14 && row <25){
+				if (col>14 && row <29){
 					sb.append(newLabels[row+1] + ",");
-					sb.append(currMatrix[15][row+1] + ",");
+					if (currMatrix[15][row+1] != null){
+						sb.append(currMatrix[15][row+1] + ",");
+					}
+					else {
+						sb.append(" ,");
+					}
+					
+
 				} 
 				//Collumn indicating whether NET
 				else if (col == 13){
@@ -322,7 +357,7 @@ public class Matrix {
 
 		//adds remaining rows of data
 		if (numCells>13){
-			for (int nRow=25; nRow<numCells; nRow++){
+			for (int nRow=29; nRow<numCells; nRow++){
 				for(int col=0; col<14; col++){
 					if (col == 13) {
 						sb.append(NETs[nRow] + ",");
