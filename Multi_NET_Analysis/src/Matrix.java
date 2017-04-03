@@ -113,6 +113,7 @@ public class Matrix {
 			else if (q <= lowerValue){
 				currMatrix[11][pos] = null;
 				fragmentPos.add(pos);
+				outlierPos.add(pos);
 			}
 			//if not outlier fill in column 11
 			else {

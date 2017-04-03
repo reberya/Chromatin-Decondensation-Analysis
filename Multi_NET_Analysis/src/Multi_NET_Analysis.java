@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * a user defined cutoff. 4.72x the avg area for Human PMNs
  * and 5.00 for Murine PMNs are the default settings.
  * 
- * @author RyanRebernick
+ * @author Ryan Rebernick
  *
  */
 
@@ -73,8 +73,6 @@ public class Multi_NET_Analysis {
 		treatment = oParam;
 
 		//folder from which .csv files taken out of; INPUT DIRECTORY
-
-//		try {
 		File folder = new File(inputDirectory);
 		File[] listOfFiles = folder.listFiles();
 		Boolean isTreatment = false;
@@ -195,7 +193,7 @@ public class Multi_NET_Analysis {
 		
 		//ensures lowercutoff eliminates fragments
 		//Mouse(7500.0) 	Human (20000.0)		
-		if (lowerCutoff < 20000.0){
+		if (lowerCutoff < minRID){
 			lowerCutoff = minRID;
 		}
 		
@@ -241,7 +239,6 @@ public class Multi_NET_Analysis {
 				}
 				
 				//Number of cells
-				int normTreatmentSize = treatmentsNormalized.size();
 				int treatmentsSize = treatments.size();
 				int normNonTreatmentsSize = nonTreatmentNormalized.size();
 				int nonTreatmentSize = nonTreatment.size();
