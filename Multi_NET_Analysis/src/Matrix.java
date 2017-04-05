@@ -87,7 +87,7 @@ public class Matrix {
 	 * @param upperValue - if above value, then outlier
 	 * @param lowerValue - if below value then outlier
 	 */
-	public void findOutliers(Double lowerValue, Double upperValue) {
+	public int findOutliers(Double lowerValue, Double upperValue) {
 		upperCutoff = upperValue;
 		lowerCutoff = lowerValue;
 
@@ -122,6 +122,7 @@ public class Matrix {
 			}
 			pos++;
 		}
+		return fragmentPos.size();
 	}
 
 

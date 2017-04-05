@@ -107,8 +107,9 @@ public class Multi_NET_Analysis {
 		findCutoffs();
 
 		//Find outliers for each file based on cutoffs generated from all RID values
+		int totFrags = 0;
 		for (Matrix next: allFiles){
-			next.findOutliers(lowerCutoff, upperCutoff);
+			totFrags += next.findOutliers(lowerCutoff, upperCutoff);
 		}
 
 		//computes average of 5 smallest cells
@@ -127,7 +128,7 @@ public class Multi_NET_Analysis {
 		
 		//creates CSV file containing summary of data
 		//between user specified treatments.
-		totalCSV();	
+		totalCSV(totFrags);	
 	}
 
 
@@ -201,12 +202,15 @@ public class Multi_NET_Analysis {
 	
 	
 	
-	/**
-	 * Exports the averages of all files by treatment into 
-	 * separate CSV file called "Summary"
-	 * @throws FileNotFoundException
-	 */
-	private static void totalCSV() throws FileNotFoundException {
+/**
+ * Exports the averages of all files by treatment into 
+ * separate CSV file called "Summary"
+ * 
+ * @param totalFragments - the number of total fragments in the sample.
+ * 						Used for determining if minRID optimization needed.
+ * @throws FileNotFoundException
+ */
+	private static void totalCSV(int totalFragments) throws FileNotFoundException {
 		//compute average NETosis and output to CSV
 				ArrayList<Double> nonTreatmentNormalized = new ArrayList<Double>();
 				ArrayList<Double> treatmentsNormalized = new ArrayList<Double>();
@@ -224,7 +228,11 @@ public class Multi_NET_Analysis {
 				avgTreatment = avgNonTreatment = treatmentNormalizedSD = nonTreatmentNormalizedSD = treatmentSD = nonTreatmentSD 
 				= ttest = avgCombinedNormalized = avgCombined = combinedNETosis = combinedSD = 0.0;
 				
-
+				String optMinRID= "no";
+				if (totalFragments >= 20){
+					optMinRID = "YES";
+				}
+				
 				//adds all non-outlier RID values from csv files into appropriate
 				//list to be used for average %NETosis and average NET relative area
 				for (Matrix m: allFiles){
@@ -355,6 +363,10 @@ public class Multi_NET_Analysis {
 				sb.append('\n');
 				sb.append('\n');
 				sb.append("tscore:" + ',' + ttest + ',');
+				
+				sb.append('\n');
+				sb.append('\n');
+				sb.append("Consider Optimizing minRID:" + ',' + optMinRID + ',');
 				
 				pw.write(sb.toString());
 				pw.close();
