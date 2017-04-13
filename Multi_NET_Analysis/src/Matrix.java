@@ -22,6 +22,7 @@ public class Matrix {
 	int y;
 	int cd1, cd2, cd3, cd4;
 	int condensed;
+	int numFragments;
 	Double upperCutoff;
 	Double lowerCutoff;
 	Double oldRID;
@@ -51,6 +52,7 @@ public class Matrix {
 		x = y = 0;
 		outlierPos = null;
 		isTreatment = isT;
+		numFragments = -1;
 
 		//stores csv file in double array matrix
 		Scanner scanner = new Scanner(cFile);
@@ -150,7 +152,7 @@ public class Matrix {
  * @param NETcutoff - the NET cutoff
  */
 	public void update(Double avg, Double cutoff1, Double cutoff2, 
-			Double cutoff3, Double cutoff4, Double NETcutoff) {
+			Double cutoff3, Double cutoff4, Double NETcutoff, boolean useRelative, Double setArea) {
 
 		NETs = new String[numCells];
 		cd1 = cd2 = cd3 = cd4 = 0;
@@ -163,8 +165,12 @@ public class Matrix {
 		= intDenAvg = newRawIntDenAvg = ARavg = roundAvg = solidityAvg 
 		= RelAreaAvg = 0.0;
 
-		average = avg;
-
+		if (useRelative == true){
+			average = avg;
+		}
+		else { average = setArea;
+		}
+		
 		//calculates averages excluding outliers
 		int count = 0;
 		int NETcount = 0;
@@ -234,6 +240,9 @@ public class Matrix {
 			
 			
 		}
+		
+		//tallies number of fragments
+		numFragments = fragmentPos.size();
 
 		//adds new column labels
 		labels[11] = "NonOutliers";
@@ -287,7 +296,7 @@ public class Matrix {
 		currMatrix[15][11] = RelAreaAvg/count;	
 		//space
 		currMatrix[15][13] = lowerCutoff;
-		currMatrix[15][14] = (double)fragmentPos.size();
+		currMatrix[15][14] = (double)numFragments;
 		currMatrix[15][15] = upperCutoff;
 		currMatrix[15][16] = (double)multiplePos.size();
 		//space
@@ -419,4 +428,24 @@ public class Matrix {
 		}
 		return normAreas;
 	}
+	
+	
+	/**
+	 * Returns the number of fragments in the matrix.
+	 * 
+	 */
+	public int getFragments(){
+		return numFragments;
+	}
+	
+	
+	/**
+	 * 
+	 * @return name of the matrix file
+	 */
+	public String getName(){
+		return name;
+	}
+	
+	
 }

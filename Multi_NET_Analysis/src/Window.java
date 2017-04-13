@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,6 +36,7 @@ public class Window extends JFrame {
 	static String outputDirectory, inputDirectory;		//directory files will be saved to
 	static String upperCutoff;			//upper cutoff SD
 	static String lowerCutoff;			//lower cutoff SD
+	static String absLCutoff;			//lower absolute cutoff (um^2)
 	static String NETcutoff;			//cutoff for NETs
 	static String minimumRID;			//lowest RID value for fragment elimination
 	static String treatment;			//treatment (user defined)
@@ -57,6 +59,7 @@ public class Window extends JFrame {
 		outputDirectory = "C:\\Users\\reberya\\Desktop\\DANA_II_output\\";
 		upperCutoff = "1.4";
 		lowerCutoff = "1.3";
+		absLCutoff = "90";
 		CDcutoff1 = "3.0";
 		CDcutoff2 = "4.0";
 		CDcutoff3 = "5.0";
@@ -112,26 +115,45 @@ public class Window extends JFrame {
 		gbc2.gridy = 0;
 		pB.add(uCutTF, gbc2);
 
-		//Lower Elimination Cutoff
-		JLabel LCut = new JLabel("Lower Elimination Cutoff Parameter: ");
-		JTextField LCutTF = new JTextField(lowerCutoff, 5); 
-		gbc2.gridx = 0;
-		gbc2.gridy = 1;
-		pB.add(LCut, gbc2);
-		gbc2.gridx = 1;
-		gbc2.gridy = 1;
-		pB.add(LCutTF, gbc2);
-
-		//Minimum RID value
-		JLabel min = new JLabel("Minimum RID value: ");
+		//Lower cutoff value (minRID)
+		JLabel min = new JLabel("Lower Cutoff Value: ");
 		JTextField minTF = new JTextField(minimumRID, 5); 
 		gbc2.gridx = 0;
-		gbc2.gridy = 2;
+		gbc2.gridy = 1;
 		pB.add(min, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 2;
+		gbc2.gridy = 1;
 		pB.add(minTF, gbc2);
 
+		//Relative area
+		JLabel relArea = new JLabel("Relative area normalized to: ");
+		JCheckBox Rbox = new JCheckBox();
+		JLabel rel5 = new JLabel("Mean area of 5 smallest non-outlier ROIs");
+		JCheckBox Abox = new JCheckBox();
+		JLabel absLabel = new JLabel("Area (um^2):");
+		JTextField areaTF = new JTextField("90", 5);
+
+		gbc2.gridx = 0;
+		gbc2.gridy = 2;
+		pB.add(relArea, gbc2);
+
+		gbc2.insets.set(0, 0, 0, 0);
+		gbc2.gridx = 1;
+		gbc2.gridy = 2;
+		pB.add(Rbox, gbc2);
+		gbc2.gridx = 2;
+		gbc2.gridy = 2;
+		pB.add(rel5, gbc2);
+
+		gbc2.gridx = 1;
+		gbc2.gridy = 3;
+		pB.add(Abox, gbc2);
+		gbc2.gridx = 2;
+		gbc2.gridy = 3;
+		pB.add(absLabel, gbc2);
+		gbc2.gridx = 3;
+		gbc2.gridy = 3;
+		pB.add(areaTF, gbc2);
 
 		//DNA decondensation cutoffs
 		JLabel DNACut1 = new JLabel("DNA Decondensation Cutoff 1: ");
@@ -144,51 +166,51 @@ public class Window extends JFrame {
 		JTextField DNACutTF4 = new JTextField(CDcutoff4, 5); 
 
 		gbc2.gridx = 0;
-		gbc2.gridy = 3;
+		gbc2.gridy = 5;
 		pB.add(DNACut1, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 3;
+		gbc2.gridy = 5;
 		pB.add(DNACutTF1, gbc2);
 
 		gbc2.gridx = 0;
-		gbc2.gridy = 4;
+		gbc2.gridy = 6;
 		pB.add(DNACut2, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 4;
+		gbc2.gridy = 6;
 		pB.add(DNACutTF2, gbc2);
 
 		gbc2.gridx = 0;
-		gbc2.gridy = 5;
+		gbc2.gridy = 7;
 		pB.add(DNACut3, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 5;
+		gbc2.gridy = 7;
 		pB.add(DNACutTF3, gbc2);
 
 		gbc2.gridx = 0;
-		gbc2.gridy = 6;
+		gbc2.gridy = 8;
 		pB.add(DNACut4, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 6;
+		gbc2.gridy = 8;
 		pB.add(DNACutTF4, gbc2);
 
 		//NET Cutoff
 		JLabel NETcut = new JLabel("NET Cutoff:");
 		JTextField NETcutTF = new JTextField("4.72", 5); 
 		gbc2.gridx = 0;
-		gbc2.gridy = 7;
+		gbc2.gridy = 9;
 		pB.add(NETcut, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 7;
+		gbc2.gridy = 9;
 		pB.add(NETcutTF, gbc2);
 
 		//Optional Parameter 
 		JLabel oParam = new JLabel("Optional Parameter:");
 		JTextField oParamTF = new JTextField("", 5); 
 		gbc2.gridx = 0;
-		gbc2.gridy = 8;
+		gbc2.gridy = 10;
 		pB.add(oParam, gbc2);
 		gbc2.gridx = 1;
-		gbc2.gridy = 8;
+		gbc2.gridy = 10;
 		pB.add(oParamTF, gbc2);
 
 		add(pB, BorderLayout.CENTER);
@@ -221,6 +243,7 @@ public class Window extends JFrame {
 
 				int rVal = saveFile.showSaveDialog(null);
 				if (rVal == JFileChooser.APPROVE_OPTION){
+					
 					try {
 						String temp = saveFile.getSelectedFile().getAbsolutePath();
 						String fName = saveFile.getSelectedFile().getName();
@@ -234,17 +257,19 @@ public class Window extends JFrame {
 
 						File newFile = new File(temp);
 						PrintWriter writer = new PrintWriter(newFile, "UTF-8");
-						writer.println(inDirTF.getText());
-						writer.println(outDirTF.getText());
-						writer.println(uCutTF.getText());
-						writer.println(LCutTF.getText());
-						writer.println(minTF.getText());
-						writer.println(DNACutTF1.getText());
-						writer.println(DNACutTF2.getText());
-						writer.println(DNACutTF3.getText());
-						writer.println(DNACutTF4.getText());
-						writer.println(NETcutTF.getText());
-						writer.println(oParamTF.getText());
+						writer.println(inDirTF.getText());	//1
+						writer.println(outDirTF.getText());	//2
+						writer.println(uCutTF.getText());	//3
+						writer.println(minTF.getText());	//4
+						writer.println(Rbox.isSelected());	//5
+						writer.println(Abox.isSelected());	//6
+						writer.println(areaTF.getText());	//7
+						writer.println(DNACutTF1.getText());//8
+						writer.println(DNACutTF2.getText());//9
+						writer.println(DNACutTF3.getText());//10
+						writer.println(DNACutTF4.getText());//11
+						writer.println(NETcutTF.getText());	//12
+						writer.println(oParamTF.getText());	//13
 						writer.close();
 						JOptionPane.showMessageDialog(null, "File has been saved","File Saved",JOptionPane.INFORMATION_MESSAGE);
 						// true for rewrite, false for override
@@ -284,7 +309,7 @@ public class Window extends JFrame {
 						fileName = fileName.substring(0,fileName.lastIndexOf('.'));
 						name.setText(fileName);
 						String element = null;
-						for (int j=0; j<11; j++){
+						for (int j=0; j<14; j++){
 							element = in.readLine();
 							if (j == 0){
 								inDirTF.setText(element);
@@ -296,27 +321,37 @@ public class Window extends JFrame {
 								uCutTF.setText(element);
 							}
 							else if (j == 3){
-								LCutTF.setText(element);
-							}
-							else if (j == 4){
 								minTF.setText(element);
 							}
+							else if (j == 4){
+								if(element.equals("true")){
+									Rbox.setSelected(true);
+								} else { Rbox.setSelected(false);}
+							}
 							else if (j == 5){
-								DNACutTF1.setText(element);
+								if(element.equals("true")){
+									Abox.setSelected(true);
+								} else { Abox.setSelected(false);}
 							}
 							else if (j == 6){
-								DNACutTF2.setText(element);
+								areaTF.setText(element);
 							}
 							else if (j == 7){
-								DNACutTF3.setText(element);
+								DNACutTF1.setText(element);
 							}
 							else if (j == 8){
-								DNACutTF4.setText(element);
+								DNACutTF2.setText(element);
 							}
 							else if (j == 9){
-								NETcutTF.setText(element);
+								DNACutTF3.setText(element);
 							}
 							else if (j == 10){
+								DNACutTF4.setText(element);
+							}
+							else if (j == 11){
+								NETcutTF.setText(element);
+							}
+							else if (j == 12){
 								oParamTF.setText(element);
 							}
 						}
@@ -344,14 +379,27 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean tripped = false;
-				Double UCut, LCut, min, DNACut1, DNACut2,DNACut3,DNACut4, NETcut;
-				UCut = LCut = min = DNACut1 = DNACut2 = DNACut3 = DNACut4 = NETcut = null;
+
+				boolean useRelative = false;
+				boolean useAbsolute = false;
+
+				Double UCut, LCut, area, DNACut1, DNACut2,DNACut3,DNACut4, NETcut;
+				UCut = LCut = area = DNACut1 = DNACut2 = DNACut3 = DNACut4 = NETcut = null;
 
 				//Get directory
 				String indir = inDirTF.getText();
+				if (indir.charAt(indir.length()-1) != '\\') {
+					indir = indir + "\\";
+				}
+				
 				String outdir = outDirTF.getText();
-
+				if (outdir.charAt(outdir.length()-1) != '\\') {
+					outdir = outdir + "\\";
+				}
+				
 				//Get params
+
+				//Upper cutoff
 				try {
 					UCut = Double.parseDouble(uCutTF.getText());
 				} catch(NumberFormatException n1){
@@ -359,19 +407,38 @@ public class Window extends JFrame {
 							+ "Elimination Cutoff Parameter");
 					tripped = true;
 				}
+				//Relative Lower cutoff
 				try {
-					LCut = Double.parseDouble(LCutTF.getText());
+					LCut = Double.parseDouble(minTF.getText());
 				} catch(NumberFormatException n1){
 					JOptionPane.showMessageDialog(null, "There was a problem encountered with the Lower "
-							+ "Elimination Cutoff Parameter");
+							+ "Cutoff Value");
 					tripped = true;
 				}
-				try {
-					min = Double.parseDouble(minTF.getText());
-				} catch(NumberFormatException n1){
-					JOptionPane.showMessageDialog(null, "There was a problem encountered with the Minimum "
-							+ "RID Value");
+
+				useRelative = Rbox.isSelected();
+				useAbsolute = Abox.isSelected();
+
+				if (useRelative == true && useAbsolute ==true){
+					JOptionPane.showMessageDialog(null, "You may only select the mean area of the 5 smallest"
+							+ " non-outlier ROIs or the predetermined area to normalize to.");
 					tripped = true;
+				}
+				if (useRelative == false && useAbsolute == false){
+					JOptionPane.showMessageDialog(null, "You must select either the mean area of the 5 smallest "
+							+ "non-outlier ROIs or the predetermined area to normalize to.");
+					tripped = true;
+				}
+
+				//Absolute area
+				if (useAbsolute == true && useRelative == false){
+					try {	
+						area = Double.parseDouble(areaTF.getText());
+					} catch(NumberFormatException n1){
+						JOptionPane.showMessageDialog(null, "There was a problem encountered with the "
+								+ "Area (um^2) parameter");
+						tripped = true;
+					}
 				}
 				try {	
 					DNACut1 = Double.parseDouble(DNACutTF1.getText());
@@ -401,6 +468,7 @@ public class Window extends JFrame {
 							+ "Decondensation Cutoff 4");
 					tripped = true;
 				}
+				//NET cutoff
 				try {
 					NETcut = Double.parseDouble(NETcutTF.getText());
 				} catch(NumberFormatException n1){
@@ -413,8 +481,8 @@ public class Window extends JFrame {
 
 				if (tripped == false){
 					try {
-						Multi_NET_Analysis m = new Multi_NET_Analysis(outdir, indir, UCut, LCut, min, DNACut1, DNACut2,
-								DNACut3, DNACut4, NETcut, oParameter);
+						Multi_NET_Analysis m = new Multi_NET_Analysis(outdir, indir, UCut, LCut, DNACut1, DNACut2,
+								DNACut3, DNACut4, NETcut, oParameter, useRelative, area);
 
 						//error messages for file not found warnings
 					} catch (FileNotFoundException e1) {
