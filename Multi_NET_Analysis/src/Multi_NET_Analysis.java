@@ -238,44 +238,41 @@ public class Multi_NET_Analysis {
 		if (totalFragments >= 20){
 			optMinRID = "YES";
 
-			//TODO:
 			//Find 3 files w/ most fragments
 			ArrayList<Integer> frags = new ArrayList<>();
 			for (Matrix m: allFiles){
 				frags.add(m.getFragments());
 			}
 			Collections.sort(frags);
+			int length = frags.size()-1;
 
-			int pos = 0;
+			//file with most fragments
 			for (Matrix m: allFiles){
-				if (frags.get(frags.size()-1) == m.getFragments()){
+				if (frags.get(length) == m.getFragments()){
 					file1 = m.getName();
-					frags.remove(pos);
+					frags.remove(length);
 					break;
 				}
-				pos++;
 			}
-			pos=0;
+			//file with 2nd most fragments
 			for (Matrix m: allFiles){
-				if (frags.get(frags.size()-1) == m.getFragments()){
+				if (frags.get(length-1) == m.getFragments()){
 					file2 = m.getName();
 					if (!file2.equals(file1)){
-						frags.remove(pos);
+						frags.remove(length-1);
 						break;
 					}
 				}
-				pos++;
 			}
-			pos=0;
+			//file w/ third most fragments
 			for (Matrix m: allFiles){
-				if (frags.get(frags.size()-1) == m.getFragments()){
+				if (frags.get(length-2) == m.getFragments()){
 					file3 = m.getName();
-					if (!file3.equals(file1) || !file3.equals(file2)){
-						frags.remove(pos);
+					if (!file3.equals(file1) && !file3.equals(file2)){
+						frags.remove(length-2);
 						break;
 					}
 				}
-				pos++;
 			}
 		}
 
@@ -410,12 +407,12 @@ public class Multi_NET_Analysis {
 		sb.append('\n');
 		sb.append("tscore:" + ',' + ttest + ',');
 
+		//Lower Parameter optimization
 		sb.append('\n');
 		sb.append('\n');
 		sb.append("Consider Optimizing Lower Cutoff Parameter:" + ',' + optMinRID + ',');
 		sb.append('\n');
 		sb.append("Files to check:" + ",");
-		//TODO:
 		sb.append(file1 + ",");
 		sb.append('\n');
 		sb.append("" + ",");
