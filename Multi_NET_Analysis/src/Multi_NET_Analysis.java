@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
 /**
  * 
  * Directs analysis of Fiji NET_analysis output. 
@@ -13,24 +14,21 @@ import java.util.Collections;
  * Images from a single subject/sample are analyzed together to
  * improve sample size and provide accurate measurements.
  * 
- * Program pools ROIs from all images within specified folder. 
+ * DANA pools ROIs from all images within specified folder. 
  * It then eliminates outliers based on Raw Integrated Density (RID). 
  * Any ROIs with a RID greater than a predetermined (value*SD of all ROIs) 
- * from the mean ROI's RID are excluded. Relative DNA decondensation 
+ * from the mean ROI's RID are excluded. Any ROIs with values less than 
+ * the lower cutoff are excluded. Relative DNA decondensation 
  * and %NETosis are calculated by averaging the area of the 5 smallest, 
  * non-excluded ROI's and dividing the area of the ROI of interest by that value. 
  *  
  * The value of DNA decondensation which defines a NET is based upon
- * a user defined cutoff. 4.72x the avg area for Human PMNs
- * and 5.00 for Murine PMNs are the default settings.
+ * a user defined cutoff. 
  * 
  * @author Ryan Rebernick
  *
  */
-
 public class Multi_NET_Analysis {
-	//
-	//user determined parameters
 	static Double CDcutoff1, CDcutoff2, CDcutoff3, CDcutoff4;	//cutoff level to determine whether NET
 	static String outputDirectory, inputDirectory;		//directory files will be saved to
 	static Double upperCutoff;			//upper cutoff SD for excluding cells
@@ -40,7 +38,6 @@ public class Multi_NET_Analysis {
 	static String treatment;			//Optional separation point
 	static boolean useRelative;			//Use relative area to normalize to or predefined
 	static Double absArea;				//the absolute area to use for normalzing areas
-
 	//program parameters
 	static int numCells;				//number of data-containing cells in current .csv file
 	static String fileName;				//name of the file being edited
@@ -48,16 +45,29 @@ public class Multi_NET_Analysis {
 	static ArrayList<Matrix> allFiles;	//holds matrix from 5 files
 	static ArrayList<Double> allRID;	//all Raw integrated density values
 
-	/**
-	 * The main functional class of DANA. Takes in user params from GUI
-	 * and begins reading in .csv files from specified folders.  Calls
-	 * respective methods/classes to carry out analysis. 
-	 * @param uRelative 
-	 * 
-	 * 
-	 * @param args
-	 * @throws FileNotFoundException 
-	 */
+	
+	
+	
+/**
+ *The main functional class of DANA. Takes in user params from GUI
+ *and begins reading in .csv files from specified folders.  Calls
+ *respective methods/classes to carry out analysis.
+ *   
+ * @param output - output filepath
+ * @param input - input file path
+ * @param upper - upper elimination cutoff parameter
+ * @param lower - lower cutoff value
+ * @param CD1 - DNA decondensation cutoff 1
+ * @param CD2 - DNA decondensation cutoff 2
+ * @param CD3 - DNA decondensation cutoff 3
+ * @param CD4 - DNA decondensation cutoff 4
+ * @param Net - NET cutoff
+ * @param oParam - Optional parameter
+ * @param uRelative - computing area relative to 5 
+ * 						smallest non-outlier ROIs
+ * @param area - set area user may choose to normalize to
+ * @throws FileNotFoundException
+ */
 	public Multi_NET_Analysis(String output, String input, Double upper, Double lower, Double CD1,
 			Double CD2, Double CD3, Double CD4, Double Net, String oParam, boolean uRelative, Double area) throws FileNotFoundException  {
 
@@ -72,7 +82,6 @@ public class Multi_NET_Analysis {
 		NETcutoff = Net;
 		useRelative = uRelative;
 		absArea = area;
-
 		allFiles = new ArrayList<Matrix>();	//initializes array to hold all matricies
 		allRID = new ArrayList<Double>();	//array to hold all RIDs for taking average
 		treatment = oParam;
@@ -107,7 +116,6 @@ public class Multi_NET_Analysis {
 			}
 		}
 
-
 		//Find cutoff values from RID of all matricies in allFiles
 		findCutoffs();
 
@@ -138,6 +146,7 @@ public class Multi_NET_Analysis {
 	}
 
 
+	
 
 	/**
 	 * Finds average of 5 smallest non-outlier cells.
@@ -164,6 +173,8 @@ public class Multi_NET_Analysis {
 	}
 
 
+	
+	
 	/**
 	 * Iterates through the raw integrated density of all cells
 	 * within file folder to determine average and create cutoffs
@@ -194,15 +205,11 @@ public class Multi_NET_Analysis {
 		SD = Math.sqrt(variance);
 
 		//sets RID CUTOFF VALUES
-
 		upperCutoff = average + (upperCutoff*SD);
-		//lowercutoff predefined
-
-		//		lowerCutoff = average - (lowerCutoff*SD);
-
 	}
 
 
+	
 
 	/**
 	 * Exports the averages of all files by treatment into 
@@ -288,7 +295,6 @@ public class Multi_NET_Analysis {
 				nonTreatment.addAll(m.getNonOutlierAreas());
 			}
 		}
-
 		//Number of cells
 		int treatmentsSize = treatments.size();
 		int normNonTreatmentsSize = nonTreatmentNormalized.size();
@@ -308,7 +314,6 @@ public class Multi_NET_Analysis {
 			}
 			avgNonTreatmentNormalized = avgNonTreatmentNormalized + w;
 		}
-
 		//computes actual averages
 		for (Double q: treatments) {
 			avgTreatment = avgTreatment + q;
@@ -316,13 +321,10 @@ public class Multi_NET_Analysis {
 		for (Double w: nonTreatment) {
 			avgNonTreatment = avgNonTreatment + w;
 		}
-
-
 		//normalized average
 		avgCombinedNormalized = ((avgTreatmentNormalized+avgNonTreatmentNormalized)/(combinedSize));
 		avgTreatmentNormalized = (avgTreatmentNormalized/treatmentsSize);
 		avgNonTreatmentNormalized = (avgNonTreatmentNormalized/nonTreatmentSize);
-
 
 		//actual average
 		avgCombined = (avgTreatment + avgNonTreatment)/(treatmentsSize+nonTreatmentSize);
@@ -353,7 +355,6 @@ public class Multi_NET_Analysis {
 		Double treatmentNormalizedSEM = (treatmentNormalizedSD/(Math.sqrt(treatmentsSize)));
 		Double nonTreatmentNormalizedSEM = (nonTreatmentNormalizedSD/(Math.sqrt(nonTreatmentSize)));
 		Double combinedNormalizedSEM = (combinedNormalizedSD/(Math.sqrt(combinedSize)));
-
 
 		//computes SD and SEM for actual areas
 		for (Double qq: treatments){
@@ -420,9 +421,6 @@ public class Multi_NET_Analysis {
 		sb.append('\n');
 		sb.append("" + ",");
 		sb.append(file3 + ",");
-
-
-
 
 		pw.write(sb.toString());
 		pw.close();

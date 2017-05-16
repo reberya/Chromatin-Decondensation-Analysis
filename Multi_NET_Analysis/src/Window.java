@@ -10,10 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -23,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+
 /**
  * Graphic user interface for DANA. 
  * 
@@ -42,8 +41,9 @@ public class Window extends JFrame {
 	static String treatment;			//treatment (user defined)
 	static String settingsName;			//Name of settings
 
-
-
+	
+	
+	
 	public Window() {
 
 		super("DNA Area and NETosis Analysis (DANA)");	
@@ -67,9 +67,6 @@ public class Window extends JFrame {
 		NETcutoff = "4.72";
 		minimumRID = "20000";
 		settingsName = "Default";
-
-
-
 
 		//CENTER - Panel A
 		JPanel pA = new JPanel(new GridBagLayout());
@@ -98,7 +95,6 @@ public class Window extends JFrame {
 		pA.add(outDirTF, gbc);
 
 		add(pA, BorderLayout.NORTH);
-
 
 		//DNA Decondensation Cutoffs
 		JPanel pB = new JPanel(new GridBagLayout());
@@ -212,7 +208,6 @@ public class Window extends JFrame {
 		gbc2.gridx = 1;
 		gbc2.gridy = 10;
 		pB.add(oParamTF, gbc2);
-
 		add(pB, BorderLayout.CENTER);
 
 		//Settings name, Save, load, run buttons
@@ -277,9 +272,6 @@ public class Window extends JFrame {
 					} catch (IOException e2) {
 						e2.printStackTrace();
 					}
-
-
-
 				}
 				else if(rVal == JFileChooser.CANCEL_OPTION){
 					JOptionPane.showMessageDialog(null, "File save has been canceled");
@@ -355,18 +347,15 @@ public class Window extends JFrame {
 								oParamTF.setText(element);
 							}
 						}
-
 						in.close();
 
 					} catch (IOException e1) {
 						e1.printStackTrace();
-
 					}
 				}
 
 			}
 		});
-
 
 		gbc3.gridx = 2;
 		gbc3.gridy = 1;
@@ -391,14 +380,12 @@ public class Window extends JFrame {
 				if (indir.charAt(indir.length()-1) != '\\') {
 					indir = indir + "\\";
 				}
-				
 				String outdir = outDirTF.getText();
 				if (outdir.charAt(outdir.length()-1) != '\\') {
 					outdir = outdir + "\\";
 				}
-				
+		
 				//Get params
-
 				//Upper cutoff
 				try {
 					UCut = Double.parseDouble(uCutTF.getText());
@@ -476,9 +463,7 @@ public class Window extends JFrame {
 							+ "Cutoff");
 					tripped = true;
 				}
-
 				String oParameter = oParamTF.getText();
-
 				if (tripped == false){
 					try {
 						Multi_NET_Analysis m = new Multi_NET_Analysis(outdir, indir, UCut, LCut, DNACut1, DNACut2,
@@ -504,15 +489,7 @@ public class Window extends JFrame {
 		gbc3.gridx = 4;
 		gbc3.gridy = 1;
 		pC.add(run, gbc3);
-
 		add(pC, BorderLayout.SOUTH);
-
-
 	}
-
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 }

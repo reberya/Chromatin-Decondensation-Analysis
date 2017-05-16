@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+
 /**
  * Stores and modifies the .csv file for each image.
  * 
@@ -14,27 +15,28 @@ import java.util.Scanner;
  */
 public class Matrix {
 
-	String name;
-	Double[][] currMatrix;
-	String[] labels;
-	int numCells;
-	int x;
-	int y;
-	int cd1, cd2, cd3, cd4;
-	int condensed;
-	int numFragments;
-	Double upperCutoff;
-	Double lowerCutoff;
-	Double oldRID;
-	ArrayList<Integer> outlierPos;
-	ArrayList<Integer> multiplePos;
-	ArrayList<Integer> fragmentPos;
+	String name; //name of file
+	Double[][] currMatrix; //current files matrix w/o labels
+	String[] labels; //first row of matrix containing labels
+	int numCells; //number of ROIs in the image
+	int x; //count
+	int y; //count
+	int cd1, cd2, cd3, cd4; //counts for cutoffs
+	int numFragments;	//number of fragments 
+	Double upperCutoff;	//matricies upper cutoff value
+	Double lowerCutoff;	//matricies lower cutoff value
+	Double oldRID;		//the non-adjusted RID
+	ArrayList<Integer> outlierPos;	//list containing pos of all outliers w/in matrix
+	ArrayList<Integer> multiplePos; //list containing pos of all multiples w/in matrix
+	ArrayList<Integer> fragmentPos; //list containing pos of all fragments w/in matrix
 	
-	ArrayList<Double> nonOutlierAreas;
-	String [] NETs;
-	String[] newLabels;
-	Boolean isTreatment;
+	ArrayList<Double> nonOutlierAreas; //areas of all ROIs not excluded as outliers
+	String [] NETs;	//Yes/no NET by position
+	String[] newLabels; //new labels with addtional parameters
+	Boolean isTreatment;//Whether the matrix is treated w/ the optional parameter
 
+	
+	
 
 	/**
 	 * 
@@ -84,6 +86,8 @@ public class Matrix {
 	}
 
 
+	
+	
 	/**
 	 * Finds and marks the outliers in the current matrix
 	 * @param upperValue - if above value, then outlier
@@ -128,8 +132,6 @@ public class Matrix {
 	}
 
 
-
-
 	/**
 	 * Returns the list of nonOutlierAreas 
 	 * 
@@ -140,6 +142,8 @@ public class Matrix {
 	}
 
 
+	
+	
 /**
  * Updates the matrix to include outliers, relative sizes, 
  * and new averages excluding outliers.
@@ -156,7 +160,6 @@ public class Matrix {
 
 		NETs = new String[numCells];
 		cd1 = cd2 = cd3 = cd4 = 0;
-		condensed = 0;
 		Double average,  relArea, 
 		areaAvg, meanAvg, minAvg, maxAvg, circAvg, intDenAvg, newRawIntDenAvg,
 		ARavg, roundAvg, solidityAvg, RelAreaAvg;
@@ -179,7 +182,6 @@ public class Matrix {
 		for (int i=0; i<numCells; i++){
 			if (!outlierPos.contains(i)){
 				count++;
-
 				areaAvg += currMatrix[1][i];
 				meanAvg += currMatrix[2][i];
 				minAvg += currMatrix[3][i];
@@ -237,8 +239,6 @@ public class Matrix {
 				currMatrix[12][i] = null;
 				NETs[i] = "Mt";
 			}
-			
-			
 		}
 		
 		//tallies number of fragments
@@ -282,7 +282,6 @@ public class Matrix {
 		newLabels[29] = "# Cells:";			//25 previously
 		
 		//adds new averages to matrix
-
 		currMatrix[15][1] = areaAvg/count;
 		currMatrix[15][2] =meanAvg/count;
 		currMatrix[15][3] = minAvg/count;
@@ -312,9 +311,11 @@ public class Matrix {
 		currMatrix[15][27] = (double) ((double) NETcount *100/(count));
 		currMatrix[15][28] = (double) NETcount;
 		currMatrix[15][29] = (double) count;
-		
 	}
 
+	
+	
+	
 	/**
 	 * creates updated CSV file in location passed to it
 	 * 
@@ -344,8 +345,6 @@ public class Matrix {
 					else {
 						sb.append(" ,");
 					}
-					
-
 				} 
 				//Collumn indicating whether NET
 				else if (col == 13){
@@ -365,7 +364,6 @@ public class Matrix {
 			}
 			sb.append('\n');
 		}
-
 		//adds remaining rows of data
 		if (numCells>13){
 			for (int nRow=29; nRow<numCells; nRow++){
@@ -383,13 +381,13 @@ public class Matrix {
 				sb.append('\n');
 			}
 		}
-
 		pw.write(sb.toString());
 		pw.close();
-
 	}
 
 
+	
+	
 	/**
 	 * @return list of RID for all cells in matrix
 	 */
@@ -404,6 +402,8 @@ public class Matrix {
 		return RID;
 	}
 
+	
+	
 
 	/**
 	 * 
@@ -413,6 +413,8 @@ public class Matrix {
 		return isTreatment;
 	}
 
+	
+	
 	
 	/**
 	 * Compiles normalized areas and exports ArrayList
@@ -424,10 +426,11 @@ public class Matrix {
 			if (D != null) {
 				normAreas.add(D);
 			}
-
 		}
 		return normAreas;
 	}
+	
+	
 	
 	
 	/**
@@ -439,6 +442,9 @@ public class Matrix {
 	}
 	
 	
+	
+	
+	
 	/**
 	 * 
 	 * @return name of the matrix file
@@ -446,6 +452,4 @@ public class Matrix {
 	public String getName(){
 		return name;
 	}
-	
-	
 }
