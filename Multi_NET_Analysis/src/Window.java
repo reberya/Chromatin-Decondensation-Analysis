@@ -47,7 +47,7 @@ public class Window extends JFrame {
 	public Window() {
 
 		super("DNA Area and NETosis Analysis (DANA)");	
-		setSize(650,400);
+		setSize(650,450);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		//Icon
@@ -57,14 +57,13 @@ public class Window extends JFrame {
 
 		inputDirectory = "C:\\Users\\reberya\\Desktop\\DANA_II_output\\";
 		outputDirectory = "C:\\Users\\reberya\\Desktop\\DANA_II_output\\";
-		upperCutoff = "1.4";
-		lowerCutoff = "1.3";
+		upperCutoff = "1.5";
 		absLCutoff = "90";
 		CDcutoff1 = "3.0";
 		CDcutoff2 = "4.0";
 		CDcutoff3 = "5.0";
 		CDcutoff4 = "6.0";
-		NETcutoff = "4.72";
+		NETcutoff = "4.70";
 		minimumRID = "20000";
 		settingsName = "Default";
 
@@ -191,7 +190,7 @@ public class Window extends JFrame {
 
 		//NET Cutoff
 		JLabel NETcut = new JLabel("NET Cutoff:");
-		JTextField NETcutTF = new JTextField("4.72", 5); 
+		JTextField NETcutTF = new JTextField("4.70", 5); 
 		gbc2.gridx = 0;
 		gbc2.gridy = 9;
 		pB.add(NETcut, gbc2);
